@@ -1,6 +1,7 @@
 package com.example.gym;
 
-import com.example.gym.config.AppConfig;
+import com.example.gym.config.JpaConfig;
+import com.example.gym.facade.GymFacade;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
@@ -12,8 +13,8 @@ public class SpringApplicationStarter {
     public static void main(String[] args) {
         logger.info("Starting Gym CRM Application");
 
-        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
-        ApplicationFacade facade = context.getBean(ApplicationFacade.class);
+        ApplicationContext context = new AnnotationConfigApplicationContext(JpaConfig.class);
+        GymFacade facade = context.getBean(GymFacade.class);
 
         logger.info("Application started successfully");
         //facade.run();

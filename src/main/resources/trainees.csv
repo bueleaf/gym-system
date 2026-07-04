@@ -1,5 +1,0 @@
-firstName,lastName,username,password,isActive,dateOfBirth,address
-John,Doe,john.doe,pass123456,true,1990-05-15,"123 Main St, New York"
-Jane,Smith,jane.smith,pass789012,true,1985-08-22,"456 Oak Ave, Boston"
-Mike,Johnson,mike.johnson,pass345678,false,1992-12-03,"789 Pine Rd, Chicago"
-Sarah,Wilson,sarah.wilson,pass901234,true,1988-03-10,"321 Elm St, Seattle"
