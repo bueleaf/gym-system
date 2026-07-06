@@ -1,6 +1,6 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
-import com.example.gym.entities.UserEntity;
+import com.example.gym.entity.UserEntity;
 
 import java.util.Optional;
 

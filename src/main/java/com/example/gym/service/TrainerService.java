@@ -1,11 +1,11 @@
-package com.example.gym.services;
+package com.example.gym.service;
 
-import com.example.gym.daos.TrainerDao;
-import com.example.gym.daos.TrainingTypeDao;
-import com.example.gym.dtos.UpdateTrainerProfileRequest;
-import com.example.gym.entities.TrainerEntity;
-import com.example.gym.entities.TrainingTypeEntity;
-import com.example.gym.utils.ValidationUtility;
+import com.example.gym.dao.TrainerDao;
+import com.example.gym.dao.TrainingTypeDao;
+import com.example.gym.dto.UpdateTrainerProfileRequest;
+import com.example.gym.entity.TrainerEntity;
+import com.example.gym.entity.TrainingTypeEntity;
+import com.example.gym.util.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

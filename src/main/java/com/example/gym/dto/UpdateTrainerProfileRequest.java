@@ -1,4 +1,4 @@
-package com.example.gym.dtos;
+package com.example.gym.dto;
 
 public class UpdateTrainerProfileRequest {
     private final String firstName;

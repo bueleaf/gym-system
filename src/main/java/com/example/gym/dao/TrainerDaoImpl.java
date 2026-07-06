@@ -1,6 +1,6 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
-import com.example.gym.entities.TrainerEntity;
+import com.example.gym.entity.TrainerEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 

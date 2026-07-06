@@ -1,4 +1,4 @@
-package com.example.gym.entities;
+package com.example.gym.entity;
 
 import javax.persistence.*;
 
