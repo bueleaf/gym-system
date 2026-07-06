@@ -1,9 +1,9 @@
-package com.example.gym.services;
+package com.example.gym.service;
 
-import com.example.gym.daos.TrainingDao;
-import com.example.gym.dtos.TraineeTrainingSearchCriteria;
-import com.example.gym.dtos.TrainerTrainingSearchCriteria;
-import com.example.gym.entities.TrainingEntity;
+import com.example.gym.dao.TrainingDao;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
+import com.example.gym.entity.TrainingEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

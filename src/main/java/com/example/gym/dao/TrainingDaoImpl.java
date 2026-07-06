@@ -1,8 +1,8 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
-import com.example.gym.dtos.TraineeTrainingSearchCriteria;
-import com.example.gym.dtos.TrainerTrainingSearchCriteria;
-import com.example.gym.entities.TrainingEntity;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
+import com.example.gym.entity.TrainingEntity;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;

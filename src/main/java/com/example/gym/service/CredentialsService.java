@@ -1,6 +1,6 @@
-package com.example.gym.services;
+package com.example.gym.service;
 
-import com.example.gym.daos.UserDao;
+import com.example.gym.dao.UserDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

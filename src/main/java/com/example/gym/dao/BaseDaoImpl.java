@@ -1,4 +1,4 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

@@ -1,11 +1,11 @@
-package com.example.gym.services;
+package com.example.gym.service;
 
-import com.example.gym.daos.TraineeDao;
-import com.example.gym.daos.TrainerDao;
-import com.example.gym.dtos.UpdateTraineeProfileRequest;
-import com.example.gym.entities.TraineeEntity;
-import com.example.gym.entities.TrainerEntity;
-import com.example.gym.utils.ValidationUtility;
+import com.example.gym.dao.TraineeDao;
+import com.example.gym.dao.TrainerDao;
+import com.example.gym.dto.UpdateTraineeProfileRequest;
+import com.example.gym.entity.TraineeEntity;
+import com.example.gym.entity.TrainerEntity;
+import com.example.gym.util.ValidationUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

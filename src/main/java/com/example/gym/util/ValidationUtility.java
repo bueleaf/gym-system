@@ -1,7 +1,7 @@
-package com.example.gym.utils;
+package com.example.gym.util;
 
-import com.example.gym.entities.TraineeEntity;
-import com.example.gym.entities.UserEntity;
+import com.example.gym.entity.TraineeEntity;
+import com.example.gym.entity.UserEntity;
 
 public class ValidationUtility
 {

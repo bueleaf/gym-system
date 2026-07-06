@@ -1,11 +1,15 @@
 package com.example.gym.facade;
 
-import com.example.gym.dtos.TraineeTrainingSearchCriteria;
-import com.example.gym.dtos.TrainerTrainingSearchCriteria;
-import com.example.gym.dtos.UpdateTraineeProfileRequest;
-import com.example.gym.dtos.UpdateTrainerProfileRequest;
-import com.example.gym.entities.*;
-import com.example.gym.services.*;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.UpdateTraineeProfileRequest;
+import com.example.gym.dto.UpdateTrainerProfileRequest;
+import com.example.gym.entity.TraineeEntity;
+import com.example.gym.entity.TrainerEntity;
+import com.example.gym.entity.TrainingEntity;
+import com.example.gym.entity.TrainingTypeEntity;
+import com.example.gym.entity.UserEntity;
+import com.example.gym.service.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

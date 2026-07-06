@@ -1,6 +1,6 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
-import com.example.gym.entities.TrainingTypeEntity;
+import com.example.gym.entity.TrainingTypeEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;

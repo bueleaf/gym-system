@@ -1,7 +1,7 @@
-package com.example.gym.services;
+package com.example.gym.service;
 
-import com.example.gym.entities.UserEntity;
-import com.example.gym.utils.ValidationUtility;
+import com.example.gym.entity.UserEntity;
+import com.example.gym.util.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

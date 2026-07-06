@@ -1,6 +1,6 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
-import com.example.gym.entities.TrainingTypeEntity;
+import com.example.gym.entity.TrainingTypeEntity;
 
 import java.util.List;
 import java.util.Optional;

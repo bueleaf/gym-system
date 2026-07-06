@@ -1,4 +1,4 @@
-package com.example.gym.daos;
+package com.example.gym.dao;
 
 import java.util.List;
 import java.util.Optional;

@@ -1,4 +1,3 @@
-
 package com.example.gym.config;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -61,7 +60,7 @@ public class JpaConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
         em.setDataSource(dataSource());
-        em.setPackagesToScan("com.example.gym.entities");
+        em.setPackagesToScan("com.example.gym.entity");
 
         HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
         em.setJpaVendorAdapter(vendorAdapter);
