@@ -1,8 +1,8 @@
 package com.example.gym;
 
-import com.example.gym.daos.UserDao;
-import com.example.gym.entities.*;
-import com.example.gym.services.AuthenticationService;
+import com.example.gym.dao.UserDao;
+import com.example.gym.entity.*;
+import com.example.gym.service.AuthenticationService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
