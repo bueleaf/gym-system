@@ -4,6 +4,7 @@ import com.example.gym.dao.TrainingDao;
 import com.example.gym.dto.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import com.example.gym.entity.TrainingEntity;
+import com.example.gym.util.ValidationUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,7 @@ public class TrainingService {
     @Transactional
     public TrainingEntity createTraining(TrainingEntity training) {
         logger.info("Creating new training: {}", training.getTrainingName());
-        validateTraining(training);
+        ValidationUtility.validateTraining(training);
         trainingDao.create(training);
         return training;
     }
@@ -60,27 +61,6 @@ public class TrainingService {
         return trainingDao.findTrainerTrainingsByCriteria(
                 trainerUsername,
                 criteria);
-    }
-
-    private void validateTraining(TrainingEntity training) {
-        if (training.getTrainee() == null) {
-            throw new IllegalArgumentException("Trainee is required");
-        }
-        if (training.getTrainer() == null) {
-            throw new IllegalArgumentException("Trainer is required");
-        }
-        if (training.getTrainingName() == null || training.getTrainingName().trim().isEmpty()) {
-            throw new IllegalArgumentException("Training name is required");
-        }
-        if (training.getTrainingType() == null) {
-            throw new IllegalArgumentException("Training type is required");
-        }
-        if (training.getTrainingDate() == null) {
-            throw new IllegalArgumentException("Training date is required");
-        }
-        if (training.getTrainingDuration() == null || training.getTrainingDuration() <= 0) {
-            throw new IllegalArgumentException("Training duration must be positive");
-        }
     }
 
     @Autowired

@@ -39,7 +39,7 @@ public class TrainerService {
 
     @Transactional
     public TrainerEntity createTrainer(TrainerEntity trainer) {
-        ValidationUtility.validateTrainerProfile(trainer);
+        ValidationUtility.validateTrainer(trainer);
         userAccountService.initializeNewAccount(trainer);
         trainerDao.create(trainer);
         return trainer;
@@ -57,7 +57,7 @@ public class TrainerService {
                         "Training type not found: " + request.getSpecializationId()));
         trainer.setSpecialization(specialization);
 
-        ValidationUtility.validateTrainerProfile(trainer);
+        ValidationUtility.validateTrainer(trainer);
         return trainerDao.update(trainer);
     }
 

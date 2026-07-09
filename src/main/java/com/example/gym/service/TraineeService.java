@@ -44,7 +44,7 @@ public class TraineeService {
 
     @Transactional
     public TraineeEntity createTrainee(TraineeEntity trainee) {
-        ValidationUtility.validateTraineeProfile(trainee);
+        ValidationUtility.validateTrainee(trainee);
         userAccountService.initializeNewAccount(trainee);
         traineeDao.create(trainee);
         return trainee;
@@ -59,7 +59,7 @@ public class TraineeService {
         trainee.setDateOfBirth(request.getDateOfBirth());
         trainee.setAddress(request.getAddress());
 
-        ValidationUtility.validateTraineeProfile(trainee);
+        ValidationUtility.validateTrainee(trainee);
         return traineeDao.update(trainee);
     }
 
