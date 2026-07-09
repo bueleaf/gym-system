@@ -1,6 +1,7 @@
 package com.example.gym.util;
 
 import com.example.gym.entity.TraineeEntity;
+import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.UserEntity;
 
 public class ValidationUtility
@@ -26,6 +27,14 @@ public class ValidationUtility
 
         if (trainee.getAddress() == null || trainee.getAddress().isBlank()) {
             throw new IllegalArgumentException("Address is required");
+        }
+    }
+
+    public static void validateTrainerProfile(TrainerEntity trainer) {
+        validateUser(trainer);
+
+        if (trainer.getSpecialization() == null) {
+            throw new IllegalArgumentException("Specialization is required");
         }
     }
 }
