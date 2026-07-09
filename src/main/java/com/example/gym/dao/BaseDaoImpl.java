@@ -47,9 +47,4 @@ public abstract class BaseDaoImpl<T> implements BaseDao<T> {
             entityManager.remove(entity);
         }
     }
-
-    @Override
-    public boolean existsById(Long id) {
-        return findById(id).isPresent();
-    }
 }

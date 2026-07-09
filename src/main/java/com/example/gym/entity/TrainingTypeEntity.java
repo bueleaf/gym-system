@@ -6,7 +6,6 @@ import javax.persistence.*;
 @Table(name = "training_types")
 @org.hibernate.annotations.Immutable
 public class TrainingTypeEntity {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

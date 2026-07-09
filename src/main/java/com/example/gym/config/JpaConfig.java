@@ -21,7 +21,6 @@ import java.util.Properties;
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 public class JpaConfig {
-
     @Value("${db.url}")
     private String dbUrl;
 

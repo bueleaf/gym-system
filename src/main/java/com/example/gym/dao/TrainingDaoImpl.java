@@ -11,7 +11,6 @@ import java.util.List;
 
 @Repository
 public class TrainingDaoImpl extends BaseDaoImpl<TrainingEntity> implements TrainingDao {
-
     private enum SearchMode { TRAINEE, TRAINER }
 
     @Override
@@ -22,7 +21,8 @@ public class TrainingDaoImpl extends BaseDaoImpl<TrainingEntity> implements Trai
     @Override
     public List<TrainingEntity> findTraineeTrainingsByCriteria(
             String traineeUsername,
-            TraineeTrainingSearchCriteria criteria) {
+            TraineeTrainingSearchCriteria criteria)
+    {
         return findTrainingsByCriteria(
                 traineeUsername,
                 criteria.getFromDate(),

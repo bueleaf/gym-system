@@ -3,7 +3,6 @@ package com.example.gym.dto;
 import java.time.LocalDate;
 
 public class TrainerTrainingSearchCriteria {
-
     private final LocalDate fromDate;
     private final LocalDate toDate;
     private final String traineeName;

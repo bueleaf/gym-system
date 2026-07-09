@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public class TraineeDaoImpl extends BaseDaoImpl<TraineeEntity> implements TraineeDao {
-
     @Override
     protected Class<TraineeEntity> getEntityClass() {
         return TraineeEntity.class;
@@ -25,15 +24,5 @@ public class TraineeDaoImpl extends BaseDaoImpl<TraineeEntity> implements Traine
 
         List<TraineeEntity> results = query.getResultList();
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
-    }
-
-    @Override
-    public List<TraineeEntity> findByFirstNameAndLastName(String firstName, String lastName) {
-        logger.debug("Finding trainees by name: {} {}", firstName, lastName);
-        String jpql = "SELECT t FROM TraineeEntity t WHERE t.firstName = :firstName AND t.lastName = :lastName";
-        TypedQuery<TraineeEntity> query = entityManager.createQuery(jpql, TraineeEntity.class);
-        query.setParameter("firstName", firstName);
-        query.setParameter("lastName", lastName);
-        return query.getResultList();
     }
 }

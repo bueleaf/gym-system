@@ -17,7 +17,6 @@ import java.util.Optional;
 @Service
 @Transactional(readOnly = true)
 public class TrainerService {
-
     private TrainerDao trainerDao;
     private TrainingTypeDao trainingTypeDao;
     private UserAccountService userAccountService;
