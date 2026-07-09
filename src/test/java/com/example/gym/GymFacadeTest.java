@@ -1,8 +1,8 @@
 package com.example.gym;
 
-import com.example.gym.entities.*;
+import com.example.gym.entity.*;
 import com.example.gym.facade.GymFacade;
-import com.example.gym.services.*;
+import com.example.gym.service.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

@@ -1,8 +1,8 @@
 package com.example.gym;
 
-import com.example.gym.entities.TraineeEntity;
-import com.example.gym.services.CredentialsService;
-import com.example.gym.services.UserAccountService;
+import com.example.gym.entity.TraineeEntity;
+import com.example.gym.service.CredentialsService;
+import com.example.gym.service.UserAccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
