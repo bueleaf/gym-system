@@ -39,7 +39,7 @@ public class TrainerService {
 
     @Transactional
     public TrainerEntity createTrainer(TrainerEntity trainer) {
-        validateTrainer(trainer);
+        ValidationUtility.validateTrainerProfile(trainer);
         userAccountService.initializeNewAccount(trainer);
         trainerDao.create(trainer);
         return trainer;
@@ -57,7 +57,7 @@ public class TrainerService {
                         "Training type not found: " + request.getSpecializationId()));
         trainer.setSpecialization(specialization);
 
-        validateTrainer(trainer);
+        ValidationUtility.validateTrainerProfile(trainer);
         return trainerDao.update(trainer);
     }
 
@@ -92,13 +92,6 @@ public class TrainerService {
 
     public Optional<TrainingTypeEntity> getTrainingTypeByName(String name) {
         return trainingTypeDao.findByName(name);
-    }
-
-    private void validateTrainer(TrainerEntity trainer) {
-        ValidationUtility.validateUser(trainer);
-        if (trainer.getSpecialization() == null) {
-            throw new IllegalArgumentException("Specialization is required");
-        }
     }
 
     private TrainerEntity findTrainer(String username) {
