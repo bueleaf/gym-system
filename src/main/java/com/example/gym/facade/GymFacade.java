@@ -76,31 +76,21 @@ public class GymFacade {
 
     public TrainerEntity getTrainerByUsername(String username, String password) {
         logger.debug("Getting trainer profile for username: {}", username);
-        UserEntity user = authenticateUser(username, password);
+        UserEntity user = authenticateAndValidateTrainer(username, password);
 
-        if (!(user instanceof TrainerEntity)) {
-            throw new SecurityException("User is not a trainer: " + username);
-        }
         return (TrainerEntity) user;
     }
 
     public TraineeEntity getTraineeByUsername(String username, String password) {
         logger.debug("Getting trainee profile for username: {}", username);
-        UserEntity user = authenticateUser(username, password);
+        UserEntity user = authenticateAndValidateTrainee(username, password);
 
-        if (!(user instanceof TraineeEntity)) {
-            throw new SecurityException("User is not a trainee: " + username);
-        }
         return (TraineeEntity) user;
     }
 
     public void changeTraineePassword(String username, String oldPassword, String newPassword) {
         logger.info("Changing password for trainee: {}", username);
-        UserEntity user = authenticateUser(username, oldPassword);
-
-        if (!(user instanceof TraineeEntity)) {
-            throw new SecurityException("User is not a trainee: " + username);
-        }
+        authenticateAndValidateTrainee(username, oldPassword);
 
         traineeService.changePassword(username, newPassword);
         logger.info("Successfully changed password for trainee: {}", username);
@@ -108,11 +98,7 @@ public class GymFacade {
 
     public void changeTrainerPassword(String username, String oldPassword, String newPassword) {
         logger.info("Changing password for trainer: {}", username);
-        UserEntity user = authenticateUser(username, oldPassword);
-
-        if (!(user instanceof TrainerEntity)) {
-            throw new SecurityException("User is not a trainer: " + username);
-        }
+        authenticateAndValidateTrainer(username, oldPassword);
 
         trainerService.changePassword(username, newPassword);
         logger.info("Successfully changed password for trainer: {}", username);
@@ -221,17 +207,21 @@ public class GymFacade {
         return result;
     }
 
-    private void authenticateAndValidateTrainee(String username, String password) {
+    private UserEntity authenticateAndValidateTrainee(String username, String password) {
         UserEntity user = authenticateUser(username, password);
         if (!(user instanceof TraineeEntity)) {
             throw new SecurityException("User is not a trainee: " + username);
         }
+
+        return user;
     }
 
-    private void authenticateAndValidateTrainer(String username, String password) {
+    private UserEntity authenticateAndValidateTrainer(String username, String password) {
         UserEntity user = authenticateUser(username, password);
         if (!(user instanceof TrainerEntity)) {
             throw new SecurityException("User is not a trainer: " + username);
         }
+
+        return user;
     }
 }

@@ -10,7 +10,6 @@ import java.util.Optional;
 
 @Repository
 public class TrainerDaoImpl extends BaseDaoImpl<TrainerEntity> implements TrainerDao {
-
     @Override
     protected Class<TrainerEntity> getEntityClass() {
         return TrainerEntity.class;
@@ -25,24 +24,5 @@ public class TrainerDaoImpl extends BaseDaoImpl<TrainerEntity> implements Traine
 
         List<TrainerEntity> results = query.getResultList();
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
-    }
-
-    @Override
-    public List<TrainerEntity> findBySpecialization(String specialization) {
-        logger.debug("Finding trainers by specialization: {}", specialization);
-        String jpql = "SELECT t FROM TrainerEntity t JOIN t.specialization s WHERE s.trainingTypeName = :specialization";
-        TypedQuery<TrainerEntity> query = entityManager.createQuery(jpql, TrainerEntity.class);
-        query.setParameter("specialization", specialization);
-        return query.getResultList();
-    }
-
-    @Override
-    public List<TrainerEntity> findByFirstNameAndLastName(String firstName, String lastName) {
-        logger.debug("Finding trainers by name: {} {}", firstName, lastName);
-        String jpql = "SELECT t FROM TrainerEntity t WHERE t.firstName = :firstName AND t.lastName = :lastName";
-        TypedQuery<TrainerEntity> query = entityManager.createQuery(jpql, TrainerEntity.class);
-        query.setParameter("firstName", firstName);
-        query.setParameter("lastName", lastName);
-        return query.getResultList();
     }
 }

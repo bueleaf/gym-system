@@ -10,7 +10,6 @@ import java.util.Optional;
 public class UserDaoImpl
         extends BaseDaoImpl<UserEntity>
         implements UserDao {
-
     @Override
     protected Class<UserEntity> getEntityClass() {
         return UserEntity.class;
@@ -18,7 +17,6 @@ public class UserDaoImpl
 
     @Override
     public Optional<UserEntity> findByUsername(String username) {
-
         String jpql =
                 "SELECT u FROM UserEntity u WHERE u.username=:username";
 
