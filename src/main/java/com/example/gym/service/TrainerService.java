@@ -1,8 +1,6 @@
 package com.example.gym.service;
 
-import com.example.gym.dao.TraineeDao;
 import com.example.gym.dao.TrainerDao;
-import com.example.gym.dao.TrainingTypeDao;
 import com.example.gym.dto.request.UpdateTrainerProfileRequest;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.util.ValidationUtility;
@@ -17,23 +15,11 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class TrainerService {
     private TrainerDao trainerDao;
-    private TraineeDao traineeDao;
-    private TrainingTypeDao trainingTypeDao;
     private UserAccountService userAccountService;
 
     @Autowired
     public void setTrainerDao(TrainerDao trainerDao) {
         this.trainerDao = trainerDao;
-    }
-
-    @Autowired
-    public void setTraineeDao(TraineeDao traineeDao) {
-        this.traineeDao = traineeDao;
-    }
-
-    @Autowired
-    public void setTrainingTypeDao(TrainingTypeDao trainingTypeDao) {
-        this.trainingTypeDao = trainingTypeDao;
     }
 
     @Autowired
@@ -44,17 +30,6 @@ public class TrainerService {
     @Transactional
     public TrainerEntity createTrainer(TrainerEntity trainer) {
         ValidationUtility.validateTrainer(trainer);
-        String usernameBase = usernameBase(
-                trainer.getFirstName(),
-                trainer.getLastName()
-        );
-
-        if (traineeDao.existsByUsernameBase(usernameBase)) {
-            throw new IllegalStateException(
-                    "User is already registered as trainee: "
-                            + usernameBase
-            );
-        }
         userAccountService.initializeNewAccount(trainer);
         trainerDao.create(trainer);
         return trainer;
@@ -110,9 +85,5 @@ public class TrainerService {
     private TrainerEntity findTrainer(String username) {
         return trainerDao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Trainer not found: " + username));
-    }
-
-    private String usernameBase(String firstName, String lastName) {
-        return firstName + "." + lastName;
     }
 }

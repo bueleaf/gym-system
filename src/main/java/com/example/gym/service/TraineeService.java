@@ -45,17 +45,6 @@ public class TraineeService {
     @Transactional
     public TraineeEntity createTrainee(TraineeEntity trainee) {
         ValidationUtility.validateUser(trainee);
-        String usernameBase = usernameBase(
-                trainee.getFirstName(),
-                trainee.getLastName()
-        );
-
-        if (trainerDao.existsByUsernameBase(usernameBase)) {
-            throw new IllegalStateException(
-                    "User is already registered as trainer: "
-                            + usernameBase
-            );
-        }
         userAccountService.initializeNewAccount(trainee);
         traineeDao.create(trainee);
         return trainee;
@@ -163,9 +152,5 @@ public class TraineeService {
     private TraineeEntity findTrainee(String username) {
         return traineeDao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Trainee not found: " + username));
-    }
-
-    private String usernameBase(String firstName, String lastName) {
-        return firstName + "." + lastName;
     }
 }

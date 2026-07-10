@@ -19,8 +19,6 @@ import static org.mockito.Mockito.*;
 class TrainerServiceTest {
 
     @Mock private TrainerDao trainerDao;
-    @Mock private TraineeDao traineeDao;
-    @Mock private TrainingTypeDao trainingTypeDao;
     @Mock private UserAccountService userAccountService;
 
     @InjectMocks private TrainerService trainerService;
@@ -109,16 +107,6 @@ class TrainerServiceTest {
                                 "b",
                                 true)))
                 .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
-    void createTrainer_shouldRejectExistingTraineeWithSameUsernameBase() {
-        TrainerEntity trainer = buildTrainer(null, "Mike", "Smith");
-        when(traineeDao.existsByUsernameBase("Mike.Smith")).thenReturn(true);
-
-        assertThatThrownBy(() -> trainerService.createTrainer(trainer))
-                .isInstanceOf(IllegalStateException.class)
-                .hasMessageContaining("already registered as trainee");
     }
 
     @Test

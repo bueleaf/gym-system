@@ -5,6 +5,4 @@ import java.util.*;
 
 public interface TraineeDao extends BaseDao<TraineeEntity> {
     Optional<TraineeEntity> findByUsername(String username);
-
-    boolean existsByUsernameBase(String usernameBase);
 }
