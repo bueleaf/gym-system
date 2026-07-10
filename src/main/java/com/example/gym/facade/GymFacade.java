@@ -1,9 +1,10 @@
 package com.example.gym.facade;
 
-import com.example.gym.dto.TraineeTrainingSearchCriteria;
-import com.example.gym.dto.TrainerTrainingSearchCriteria;
-import com.example.gym.dto.UpdateTraineeProfileRequest;
-import com.example.gym.dto.UpdateTrainerProfileRequest;
+import com.example.gym.dto.request.AddTrainingRequest;
+import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.request.UpdateTraineeProfileRequest;
+import com.example.gym.dto.request.UpdateTrainerProfileRequest;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingEntity;
@@ -25,16 +26,19 @@ public class GymFacade {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final TrainingService trainingService;
+    private final TrainingTypeService trainingTypeService;
     private final AuthenticationService authenticationService;
 
     @Autowired
     public GymFacade(TraineeService traineeService,
                      TrainerService trainerService,
                      TrainingService trainingService,
+                     TrainingTypeService trainingTypeService,
                      AuthenticationService authenticationService) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.trainingService = trainingService;
+        this.trainingTypeService = trainingTypeService;
         this.authenticationService = authenticationService;
     }
 
@@ -43,9 +47,8 @@ public class GymFacade {
         logger.info("Creating trainer profile: {} {} with specialization: {}",
                 firstName, lastName, trainingTypeName);
 
-        TrainingTypeEntity specialization = trainerService.getTrainingTypeByName(trainingTypeName)
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Invalid training type: " + trainingTypeName));
+        TrainingTypeEntity specialization =
+                trainingTypeService.getTrainingTypeByName(trainingTypeName);
 
         TrainerEntity trainer = new TrainerEntity();
         trainer.setFirstName(firstName);
@@ -76,16 +79,16 @@ public class GymFacade {
 
     public TrainerEntity getTrainerByUsername(String username, String password) {
         logger.debug("Getting trainer profile for username: {}", username);
-        UserEntity user = authenticateAndValidateTrainer(username, password);
+        authenticateAndValidateTrainer(username, password);
 
-        return (TrainerEntity) user;
+        return trainerService.getTrainerProfileByUsername(username);
     }
 
     public TraineeEntity getTraineeByUsername(String username, String password) {
         logger.debug("Getting trainee profile for username: {}", username);
-        UserEntity user = authenticateAndValidateTrainee(username, password);
+        authenticateAndValidateTrainee(username, password);
 
-        return (TraineeEntity) user;
+        return traineeService.getTraineeProfileByUsername(username);
     }
 
     public void changeTraineePassword(String username, String oldPassword, String newPassword) {
@@ -108,7 +111,9 @@ public class GymFacade {
         logger.info("Updating trainer profile for username: {}", username);
         authenticateAndValidateTrainer(username, password);
 
-        TrainerEntity result = trainerService.updateOwnProfile(username, request);
+        trainerService.updateOwnProfile(username, request);
+        TrainerEntity result =
+                trainerService.getTrainerProfileByUsername(username);
         logger.info("Successfully updated trainer profile for username: {}", username);
         return result;
     }
@@ -117,7 +122,9 @@ public class GymFacade {
         logger.info("Updating trainee profile for username: {}", username);
         authenticateAndValidateTrainee(username, password);
 
-        TraineeEntity result = traineeService.updateOwnProfile(username, request);
+        traineeService.updateOwnProfile(username, request);
+        TraineeEntity result =
+                traineeService.getTraineeProfileByUsername(username);
         logger.info("Successfully updated trainee profile for username: {}", username);
         return result;
     }
@@ -182,9 +189,52 @@ public class GymFacade {
                 criteria);
     }
 
-    public TrainingEntity addTraining(String username, String password, TrainingEntity training) {
-        logger.info("Adding training: {} by user: {}", training.getTrainingName(), username);
-        authenticateUser(username, password); // Any authenticated user can add training
+    public List<TrainingTypeEntity> getTrainingTypes(
+            String username,
+            String password) {
+        logger.debug("Getting training types for user: {}", username);
+
+        authenticateUser(username, password);
+
+        return trainingTypeService.getAllTrainingTypes();
+    }
+
+    public void changePassword(
+            String username,
+            String oldPassword,
+            String newPassword) {
+        UserEntity user = authenticateUser(username, oldPassword);
+
+        if (user instanceof TraineeEntity) {
+            traineeService.changePassword(username, newPassword);
+        } else if (user instanceof TrainerEntity) {
+            trainerService.changePassword(username, newPassword);
+        } else {
+            throw new SecurityException(
+                    "Unsupported user type: " + username
+            );
+        }
+    }
+
+    public TrainingEntity addTraining(String username, String password, AddTrainingRequest request) {
+        logger.info("Adding training: {} by user: {}", request.trainingName(), username);
+        authenticateUser(username, password);
+
+        TraineeEntity trainee = traineeService.getTraineeByUsername(
+                request.traineeUsername()
+        );
+
+        TrainerEntity trainer = trainerService.getTrainerByUsername(
+                request.trainerUsername()
+        );
+
+        TrainingEntity training = new TrainingEntity();
+        training.setTrainee(trainee);
+        training.setTrainer(trainer);
+        training.setTrainingName(request.trainingName());
+        training.setTrainingDate(request.trainingDate());
+        training.setTrainingDuration(request.trainingDuration());
+        training.setTrainingType(trainer.getSpecialization());
 
         TrainingEntity result = trainingService.createTraining(training);
         logger.info("Successfully added training with ID: {}", result.getId());

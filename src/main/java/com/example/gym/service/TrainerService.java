@@ -1,10 +1,10 @@
 package com.example.gym.service;
 
+import com.example.gym.dao.TraineeDao;
 import com.example.gym.dao.TrainerDao;
 import com.example.gym.dao.TrainingTypeDao;
-import com.example.gym.dto.UpdateTrainerProfileRequest;
+import com.example.gym.dto.request.UpdateTrainerProfileRequest;
 import com.example.gym.entity.TrainerEntity;
-import com.example.gym.entity.TrainingTypeEntity;
 import com.example.gym.util.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,18 +12,23 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Transactional(readOnly = true)
 public class TrainerService {
     private TrainerDao trainerDao;
+    private TraineeDao traineeDao;
     private TrainingTypeDao trainingTypeDao;
     private UserAccountService userAccountService;
 
     @Autowired
     public void setTrainerDao(TrainerDao trainerDao) {
         this.trainerDao = trainerDao;
+    }
+
+    @Autowired
+    public void setTraineeDao(TraineeDao traineeDao) {
+        this.traineeDao = traineeDao;
     }
 
     @Autowired
@@ -39,6 +44,17 @@ public class TrainerService {
     @Transactional
     public TrainerEntity createTrainer(TrainerEntity trainer) {
         ValidationUtility.validateTrainer(trainer);
+        String usernameBase = usernameBase(
+                trainer.getFirstName(),
+                trainer.getLastName()
+        );
+
+        if (traineeDao.existsByUsernameBase(usernameBase)) {
+            throw new IllegalStateException(
+                    "User is already registered as trainee: "
+                            + usernameBase
+            );
+        }
         userAccountService.initializeNewAccount(trainer);
         trainerDao.create(trainer);
         return trainer;
@@ -48,13 +64,9 @@ public class TrainerService {
     public TrainerEntity updateOwnProfile(String username, UpdateTrainerProfileRequest request) {
         TrainerEntity trainer = findTrainer(username);
 
-        trainer.setFirstName(request.getFirstName());
-        trainer.setLastName(request.getLastName());
-
-        TrainingTypeEntity specialization = trainingTypeDao.findById(request.getSpecializationId())
-                .orElseThrow(() -> new EntityNotFoundException(
-                        "Training type not found: " + request.getSpecializationId()));
-        trainer.setSpecialization(specialization);
+        trainer.setFirstName(request.firstName());
+        trainer.setLastName(request.lastName());
+        trainer.setActive(request.active());
 
         ValidationUtility.validateTrainer(trainer);
         return trainerDao.update(trainer);
@@ -62,6 +74,12 @@ public class TrainerService {
 
     public TrainerEntity getTrainerByUsername(String username) {
         return findTrainer(username);
+    }
+
+    public TrainerEntity getTrainerProfileByUsername(String username) {
+        TrainerEntity trainer = findTrainer(username);
+        trainer.getTrainees().size();
+        return trainer;
     }
 
     public List<TrainerEntity> getAllTrainers() {
@@ -89,12 +107,12 @@ public class TrainerService {
         trainerDao.update(trainer);
     }
 
-    public Optional<TrainingTypeEntity> getTrainingTypeByName(String name) {
-        return trainingTypeDao.findByName(name);
-    }
-
     private TrainerEntity findTrainer(String username) {
         return trainerDao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Trainer not found: " + username));
+    }
+
+    private String usernameBase(String firstName, String lastName) {
+        return firstName + "." + lastName;
     }
 }

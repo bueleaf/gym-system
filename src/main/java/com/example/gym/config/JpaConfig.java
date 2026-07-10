@@ -17,7 +17,12 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@ComponentScan(basePackages = "com.example.gym")
+@ComponentScan(basePackages =
+        {
+                "com.example.gym.service",
+                "com.example.gym.facade",
+                "com.example.gym.dao"
+        })
 @PropertySource("classpath:application.properties")
 @EnableTransactionManagement
 public class JpaConfig {

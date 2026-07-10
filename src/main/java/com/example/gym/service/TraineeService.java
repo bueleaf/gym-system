@@ -2,7 +2,7 @@ package com.example.gym.service;
 
 import com.example.gym.dao.TraineeDao;
 import com.example.gym.dao.TrainerDao;
-import com.example.gym.dto.UpdateTraineeProfileRequest;
+import com.example.gym.dto.request.UpdateTraineeProfileRequest;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.util.ValidationUtility;
@@ -44,7 +44,18 @@ public class TraineeService {
 
     @Transactional
     public TraineeEntity createTrainee(TraineeEntity trainee) {
-        ValidationUtility.validateTrainee(trainee);
+        ValidationUtility.validateUser(trainee);
+        String usernameBase = usernameBase(
+                trainee.getFirstName(),
+                trainee.getLastName()
+        );
+
+        if (trainerDao.existsByUsernameBase(usernameBase)) {
+            throw new IllegalStateException(
+                    "User is already registered as trainer: "
+                            + usernameBase
+            );
+        }
         userAccountService.initializeNewAccount(trainee);
         traineeDao.create(trainee);
         return trainee;
@@ -54,17 +65,29 @@ public class TraineeService {
     public TraineeEntity updateOwnProfile(String username, UpdateTraineeProfileRequest request) {
         TraineeEntity trainee = findTrainee(username);
 
-        trainee.setFirstName(request.getFirstName());
-        trainee.setLastName(request.getLastName());
-        trainee.setDateOfBirth(request.getDateOfBirth());
-        trainee.setAddress(request.getAddress());
+        trainee.setFirstName(request.firstName());
+        trainee.setLastName(request.lastName());
+        trainee.setDateOfBirth(request.dateOfBirth());
+        trainee.setAddress(request.address());
+        trainee.setActive(request.active());
 
-        ValidationUtility.validateTrainee(trainee);
+        ValidationUtility.validateUser(trainee);
         return traineeDao.update(trainee);
     }
 
     public TraineeEntity getTraineeByUsername(String username) {
         return findTrainee(username);
+    }
+
+    public TraineeEntity getTraineeProfileByUsername(String username) {
+        TraineeEntity trainee = findTrainee(username);
+
+        trainee.getTrainers().forEach(
+                trainer -> trainer.getSpecialization()
+                        .getTrainingTypeName()
+        );
+
+        return trainee;
     }
 
     public List<TraineeEntity> getAllTrainees() {
@@ -99,17 +122,29 @@ public class TraineeService {
     }
 
     @Transactional
-    public List<TrainerEntity> updateTraineeTrainers(String traineeUsername, List<String> trainerUsernames) {
+    public List<TrainerEntity> updateTraineeTrainers(
+            String traineeUsername,
+            List<String> trainerUsernames) {
+
+        ValidationUtility.validateTrainerUsernames(trainerUsernames);
+
         TraineeEntity trainee = findTrainee(traineeUsername);
 
-        for (TrainerEntity trainer : new HashSet<>(trainee.getTrainers())) {
+        for (TrainerEntity trainer :
+                new HashSet<>(trainee.getTrainers())) {
             trainee.removeTrainer(trainer);
         }
 
-        List<String> usernames = trainerUsernames == null ? List.of() : trainerUsernames;
-        for (String trainerUsername : usernames) {
-            TrainerEntity trainer = trainerDao.findByUsername(trainerUsername)
-                    .orElseThrow(() -> new EntityNotFoundException("Trainer not found: " + trainerUsername));
+        for (String trainerUsername : trainerUsernames) {
+            TrainerEntity trainer = trainerDao
+                    .findByUsername(trainerUsername)
+                    .orElseThrow(() ->
+                            new EntityNotFoundException(
+                                    "Trainer not found: "
+                                            + trainerUsername
+                            )
+                    );
+
             trainee.addTrainer(trainer);
         }
 
@@ -128,5 +163,9 @@ public class TraineeService {
     private TraineeEntity findTrainee(String username) {
         return traineeDao.findByUsername(username)
                 .orElseThrow(() -> new EntityNotFoundException("Trainee not found: " + username));
+    }
+
+    private String usernameBase(String firstName, String lastName) {
+        return firstName + "." + lastName;
     }
 }

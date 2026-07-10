@@ -25,4 +25,23 @@ public class TraineeDaoImpl extends BaseDaoImpl<TraineeEntity> implements Traine
         List<TraineeEntity> results = query.getResultList();
         return results.isEmpty() ? Optional.empty() : Optional.of(results.get(0));
     }
+
+    @Override
+    public boolean existsByUsernameBase(String usernameBase) {
+
+        String jpql = """
+                SELECT COUNT(t)
+                FROM TraineeEntity t
+                WHERE t.username = :usernameBase
+                   OR t.username LIKE :usernamePrefix
+                """;
+
+        Long count = entityManager
+                .createQuery(jpql, Long.class)
+                .setParameter("usernameBase", usernameBase)
+                .setParameter("usernamePrefix", usernameBase + "%")
+                .getSingleResult();
+
+        return count > 0;
+    }
 }

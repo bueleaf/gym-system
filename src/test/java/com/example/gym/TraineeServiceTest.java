@@ -1,7 +1,7 @@
 package com.example.gym;
 
 import com.example.gym.dao.*;
-import com.example.gym.dto.UpdateTraineeProfileRequest;
+import com.example.gym.dto.request.UpdateTraineeProfileRequest;
 import com.example.gym.entity.*;
 import com.example.gym.service.*;
 import org.junit.jupiter.api.*;
@@ -55,23 +55,23 @@ class TraineeServiceTest {
     }
 
     @Test
-    void createTrainee_shouldRejectMissingAddress() {
+    void createTrainee_shouldAllowMissingAddress() {
         TraineeEntity t = buildTrainee(null, "John", "Doe");
         t.setAddress(null);
 
-        assertThatThrownBy(() -> traineeService.createTrainee(t))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Address is required");
+        traineeService.createTrainee(t);
+
+        verify(traineeDao).create(t);
     }
 
     @Test
-    void createTrainee_shouldRejectMissingDateOfBirth() {
+    void createTrainee_shouldAllowMissingDateOfBirth() {
         TraineeEntity t = buildTrainee(null, "John", "Doe");
         t.setDateOfBirth(null);
 
-        assertThatThrownBy(() -> traineeService.createTrainee(t))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Date of birth is required");
+        traineeService.createTrainee(t);
+
+        verify(traineeDao).create(t);
     }
 
     @Test
@@ -83,42 +83,63 @@ class TraineeServiceTest {
         when(traineeDao.update(existing)).thenReturn(existing);
 
         UpdateTraineeProfileRequest req = new UpdateTraineeProfileRequest(
-                "John","Smith", LocalDate.of(1992,2,2),"New Address");
+                "john.doe",
+                "pass",
+                "John",
+                "Smith",
+                LocalDate.of(1992,2,2),
+                "New Address",
+                false);
 
         TraineeEntity result = traineeService.updateOwnProfile("john.doe", req);
 
         assertThat(result.getFirstName()).isEqualTo("John");
+        assertThat(result.isActive()).isFalse();
         verify(traineeDao).update(existing);
     }
 
     @Test
-    void updateOwnProfile_shouldRejectMissingAddress() {
+    void updateOwnProfile_shouldAllowMissingAddress() {
         TraineeEntity existing = buildTrainee(1L, "Old", "User");
         existing.setUsername("john.doe");
 
         when(traineeDao.findByUsername("john.doe")).thenReturn(Optional.of(existing));
+        when(traineeDao.update(existing)).thenReturn(existing);
 
         UpdateTraineeProfileRequest req = new UpdateTraineeProfileRequest(
-                "John", "Smith", LocalDate.of(1992, 2, 2), " ");
+                "john.doe",
+                "pass",
+                "John",
+                "Smith",
+                LocalDate.of(1992, 2, 2),
+                " ",
+                true);
 
-        assertThatThrownBy(() -> traineeService.updateOwnProfile("john.doe", req))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Address is required");
+        TraineeEntity result = traineeService.updateOwnProfile("john.doe", req);
+
+        assertThat(result.getAddress()).isBlank();
     }
 
     @Test
-    void updateOwnProfile_shouldRejectMissingDateOfBirth() {
+    void updateOwnProfile_shouldAllowMissingDateOfBirth() {
         TraineeEntity existing = buildTrainee(1L, "Old", "User");
         existing.setUsername("john.doe");
 
         when(traineeDao.findByUsername("john.doe")).thenReturn(Optional.of(existing));
+        when(traineeDao.update(existing)).thenReturn(existing);
 
         UpdateTraineeProfileRequest req = new UpdateTraineeProfileRequest(
-                "John", "Smith", null, "New Address");
+                "john.doe",
+                "pass",
+                "John",
+                "Smith",
+                null,
+                "New Address",
+                true);
 
-        assertThatThrownBy(() -> traineeService.updateOwnProfile("john.doe", req))
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Date of birth is required");
+        TraineeEntity result = traineeService.updateOwnProfile("john.doe", req);
+
+        assertThat(result.getDateOfBirth()).isNull();
     }
 
     @Test
@@ -127,7 +148,14 @@ class TraineeServiceTest {
 
         assertThatThrownBy(() ->
                 traineeService.updateOwnProfile("unknown",
-                        new UpdateTraineeProfileRequest("x","y",LocalDate.now(),"a")))
+                        new UpdateTraineeProfileRequest(
+                                "unknown",
+                                "pass",
+                                "x",
+                                "y",
+                                LocalDate.now(),
+                                "a",
+                                true)))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 

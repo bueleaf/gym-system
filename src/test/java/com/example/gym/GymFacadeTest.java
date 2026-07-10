@@ -2,6 +2,7 @@ package com.example.gym;
 
 import com.example.gym.entity.*;
 import com.example.gym.facade.GymFacade;
+import com.example.gym.dto.request.AddTrainingRequest;
 import com.example.gym.service.*;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,6 +22,7 @@ class GymFacadeTest {
     @Mock private TraineeService traineeService;
     @Mock private TrainerService trainerService;
     @Mock private TrainingService trainingService;
+    @Mock private TrainingTypeService trainingTypeService;
     @Mock private AuthenticationService authenticationService;
 
     @InjectMocks private GymFacade gymFacade;
@@ -53,7 +55,7 @@ class GymFacadeTest {
         TrainingTypeEntity type = new TrainingTypeEntity("Yoga");
         TrainerEntity trainer = buildTrainer();
 
-        when(trainerService.getTrainingTypeByName("Yoga")).thenReturn(Optional.of(type));
+        when(trainingTypeService.getTrainingTypeByName("Yoga")).thenReturn(type);
         when(trainerService.createTrainer(any())).thenReturn(trainer);
 
         TrainerEntity result = gymFacade.createTrainerProfile("Mike","Smith","Yoga");
@@ -64,7 +66,8 @@ class GymFacadeTest {
 
     @Test
     void createTrainerProfile_invalidType() {
-        when(trainerService.getTrainingTypeByName("Invalid")).thenReturn(Optional.empty());
+        when(trainingTypeService.getTrainingTypeByName("Invalid"))
+                .thenThrow(new IllegalArgumentException("Invalid training type: Invalid"));
 
         assertThatThrownBy(() ->
                 gymFacade.createTrainerProfile("Mike","Smith","Invalid"))
@@ -96,6 +99,7 @@ class GymFacadeTest {
     void getTraineeByUsername_returnsOnlyTrainee() {
         TraineeEntity trainee = buildTrainee();
         when(authenticationService.authenticate("john.doe","pass")).thenReturn(trainee);
+        when(traineeService.getTraineeProfileByUsername("john.doe")).thenReturn(trainee);
 
         assertThat(gymFacade.getTraineeByUsername("john.doe","pass")).isSameAs(trainee);
     }
@@ -124,13 +128,31 @@ class GymFacadeTest {
         TraineeEntity trainee = buildTrainee();
         when(authenticationService.authenticate("john.doe","pass")).thenReturn(trainee);
 
-        TrainingEntity training = new TrainingEntity();
-        training.setTrainingName("Morning Yoga");
+        TraineeEntity targetTrainee = buildTrainee();
+        TrainerEntity targetTrainer = buildTrainer();
 
-        when(trainingService.createTraining(training)).thenReturn(training);
+        AddTrainingRequest request = new AddTrainingRequest(
+                "john.doe",
+                "pass",
+                "john.doe",
+                "mike.smith",
+                "Morning Yoga",
+                LocalDate.of(2026, 1, 1),
+                60
+        );
 
-        assertThat(gymFacade.addTraining("john.doe","pass",training))
-                .isSameAs(training);
+        when(traineeService.getTraineeByUsername("john.doe"))
+                .thenReturn(targetTrainee);
+        when(trainerService.getTrainerByUsername("mike.smith"))
+                .thenReturn(targetTrainer);
+        when(trainingService.createTraining(any())).thenAnswer(invocation ->
+                invocation.getArgument(0));
+
+        TrainingEntity result = gymFacade.addTraining("john.doe","pass",request);
+
+        assertThat(result.getTrainingName()).isEqualTo("Morning Yoga");
+        assertThat(result.getTrainee()).isSameAs(targetTrainee);
+        assertThat(result.getTrainer()).isSameAs(targetTrainer);
     }
 
     @Test

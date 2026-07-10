@@ -6,4 +6,6 @@ import java.util.Optional;
 
 public interface TrainerDao extends BaseDao<TrainerEntity> {
     Optional<TrainerEntity> findByUsername(String username);
+
+    boolean existsByUsernameBase(String usernameBase);
 }
