@@ -1,4 +1,4 @@
-package com.example.gym.dto;
+package com.example.gym.dto.request;
 
 import java.time.LocalDate;
 

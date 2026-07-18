@@ -1,4 +1,4 @@
-package com.example.gym.dto;
+package com.example.gym.dto.request;
 
 import java.time.LocalDate;
 
@@ -6,18 +6,18 @@ public class TraineeTrainingSearchCriteria {
     private final LocalDate fromDate;
     private final LocalDate toDate;
     private final String trainerName;
-    private final Long trainingTypeId;
+    private final String trainingTypeName;
 
     public TraineeTrainingSearchCriteria(
             LocalDate fromDate,
             LocalDate toDate,
             String trainerName,
-            Long trainingTypeId) {
+            String trainingTypeName) {
 
         this.fromDate = fromDate;
         this.toDate = toDate;
         this.trainerName = trainerName;
-        this.trainingTypeId = trainingTypeId;
+        this.trainingTypeName = trainingTypeName;
     }
 
     public LocalDate getFromDate() {
@@ -32,7 +32,7 @@ public class TraineeTrainingSearchCriteria {
         return trainerName;
     }
 
-    public Long getTrainingTypeId() {
-        return trainingTypeId;
+    public String getTrainingTypeName() {
+        return trainingTypeName;
     }
 }

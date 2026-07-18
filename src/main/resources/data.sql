@@ -1,35 +1,31 @@
 INSERT INTO training_types (training_type_name)
-SELECT 'Yoga'              WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Yoga');
+VALUES ('Yoga')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Cardio'            WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Cardio');
+VALUES ('Cardio')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Strength Training' WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Strength Training');
+VALUES ('Strength Training')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Pilates'           WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Pilates');
+VALUES ('Pilates')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'CrossFit'          WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'CrossFit');
+VALUES ('CrossFit')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Boxing'            WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Boxing');
+VALUES ('Boxing')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Swimming'          WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Swimming');
+VALUES ('Swimming')
+    ON CONFLICT (training_type_name) DO NOTHING;
 
 INSERT INTO training_types (training_type_name)
-SELECT 'Running'           WHERE NOT EXISTS (SELECT 1 FROM training_types WHERE training_type_name = 'Running');
-
-ALTER TABLE trainings
-DROP CONSTRAINT fk_trainings_trainee,
-  ADD CONSTRAINT fk_trainings_trainee
-    FOREIGN KEY (trainee_id) REFERENCES trainees(user_id)
-    ON DELETE CASCADE;
-
-ALTER TABLE trainee_trainer
-DROP CONSTRAINT fk_tt_trainee,
-  ADD CONSTRAINT fk_tt_trainee
-    FOREIGN KEY (trainee_id) REFERENCES trainees(user_id)
-    ON DELETE CASCADE;
+VALUES ('Running')
+    ON CONFLICT (training_type_name) DO NOTHING;

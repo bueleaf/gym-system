@@ -2,7 +2,6 @@ package com.example.gym.dao;
 
 import com.example.gym.entity.TrainerEntity;
 import org.springframework.stereotype.Repository;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.TypedQuery;
 import java.util.List;

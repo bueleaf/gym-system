@@ -1,7 +1,7 @@
 package com.example.gym;
 
 import com.example.gym.dao.*;
-import com.example.gym.dto.UpdateTrainerProfileRequest;
+import com.example.gym.dto.request.UpdateTrainerProfileRequest;
 import com.example.gym.entity.*;
 import com.example.gym.service.*;
 import org.junit.jupiter.api.*;
@@ -19,7 +19,6 @@ import static org.mockito.Mockito.*;
 class TrainerServiceTest {
 
     @Mock private TrainerDao trainerDao;
-    @Mock private TrainingTypeDao trainingTypeDao;
     @Mock private UserAccountService userAccountService;
 
     @InjectMocks private TrainerService trainerService;
@@ -78,14 +77,20 @@ class TrainerServiceTest {
         TrainingTypeEntity newType = new TrainingTypeEntity("Cardio");
 
         when(trainerDao.findByUsername("mike.smith")).thenReturn(Optional.of(existing));
-        when(trainingTypeDao.findById(2L)).thenReturn(Optional.of(newType));
         when(trainerDao.update(existing)).thenReturn(existing);
 
-        UpdateTrainerProfileRequest req = new UpdateTrainerProfileRequest("Mike","Smith",2L);
+        UpdateTrainerProfileRequest req = new UpdateTrainerProfileRequest(
+                "mike.smith",
+                "pass",
+                "Mike",
+                "Smith",
+                false
+        );
 
         TrainerEntity result = trainerService.updateOwnProfile("mike.smith", req);
 
-        assertThat(result.getSpecialization()).isSameAs(newType);
+        assertThat(result.getFirstName()).isEqualTo("Mike");
+        assertThat(result.isActive()).isFalse();
         verify(trainerDao).update(existing);
     }
 
@@ -95,21 +100,12 @@ class TrainerServiceTest {
 
         assertThatThrownBy(() ->
                 trainerService.updateOwnProfile("unknown",
-                        new UpdateTrainerProfileRequest("a","b",1L)))
-                .isInstanceOf(EntityNotFoundException.class);
-    }
-
-    @Test
-    void updateOwnProfile_trainingTypeNotFound() {
-        TrainerEntity existing = buildTrainer(1L,"Old","Name");
-        existing.setUsername("mike.smith");
-
-        when(trainerDao.findByUsername("mike.smith")).thenReturn(Optional.of(existing));
-        when(trainingTypeDao.findById(99L)).thenReturn(Optional.empty());
-
-        assertThatThrownBy(() ->
-                trainerService.updateOwnProfile("mike.smith",
-                        new UpdateTrainerProfileRequest("a","b",99L)))
+                        new UpdateTrainerProfileRequest(
+                                "unknown",
+                                "pass",
+                                "a",
+                                "b",
+                                true)))
                 .isInstanceOf(EntityNotFoundException.class);
     }
 
@@ -132,12 +128,4 @@ class TrainerServiceTest {
         assertThat(trainerService.getAllTrainers()).hasSize(2);
     }
 
-    @Test
-    void getTrainingTypeByName_shouldReturnOptional() {
-        TrainingTypeEntity type = new TrainingTypeEntity("Yoga");
-        when(trainingTypeDao.findByName("Yoga")).thenReturn(Optional.of(type));
-
-        assertThat(trainerService.getTrainingTypeByName("Yoga"))
-                .isPresent();
-    }
 }
