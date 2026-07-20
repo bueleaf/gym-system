@@ -1,6 +1,6 @@
 package com.example.gym.dto.request;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 public record TrainerRegistrationRequest(
         @NotBlank(message = "First name is required")

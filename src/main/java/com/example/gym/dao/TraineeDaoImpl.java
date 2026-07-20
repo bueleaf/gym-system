@@ -3,7 +3,7 @@ package com.example.gym.dao;
 import com.example.gym.entity.TraineeEntity;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 import java.util.List;
 import java.util.Optional;
 

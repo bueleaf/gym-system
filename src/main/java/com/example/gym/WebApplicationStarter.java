@@ -7,7 +7,7 @@ import org.springframework.lang.NonNull;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-import javax.servlet.Filter;
+import jakarta.servlet.Filter;
 
 
 public class WebApplicationStarter
