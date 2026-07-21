@@ -3,7 +3,6 @@ package com.example.gym;
 import com.example.gym.controller.AuthController;
 import com.example.gym.controller.TraineeController;
 import com.example.gym.controller.TrainingController;
-import com.example.gym.config.WebConfig;
 import com.example.gym.dto.response.ApiErrorResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.exception.GlobalExceptionHandler;
@@ -11,6 +10,7 @@ import com.example.gym.facade.GymFacade;
 import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -59,7 +59,9 @@ class ControllerRequestShapeTest {
 
         GlobalExceptionHandler exceptionHandler =
                 new GlobalExceptionHandler();
-        objectMapper = new WebConfig().objectMapper();
+        objectMapper = new ObjectMapper()
+                .findAndRegisterModules()
+                .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         MappingJackson2HttpMessageConverter jsonConverter =
                 new MappingJackson2HttpMessageConverter(
                         objectMapper

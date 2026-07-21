@@ -1,5 +1,6 @@
 package com.example.gym.facade;
 
+import com.example.gym.actuator.metric.MetricsWrapper;
 import com.example.gym.dto.request.AddTrainingRequest;
 import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
@@ -28,18 +29,21 @@ public class GymFacade {
     private final TrainingService trainingService;
     private final TrainingTypeService trainingTypeService;
     private final AuthenticationService authenticationService;
+    private final MetricsWrapper metricsWrapper;
 
     @Autowired
     public GymFacade(TraineeService traineeService,
                      TrainerService trainerService,
                      TrainingService trainingService,
                      TrainingTypeService trainingTypeService,
-                     AuthenticationService authenticationService) {
+                     AuthenticationService authenticationService,
+                     MetricsWrapper metricsWrapper) {
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.trainingService = trainingService;
         this.trainingTypeService = trainingTypeService;
         this.authenticationService = authenticationService;
+        this.metricsWrapper = metricsWrapper;
     }
 
     public TrainerEntity createTrainerProfile(String firstName, String lastName,
@@ -55,7 +59,15 @@ public class GymFacade {
         trainer.setLastName(lastName);
         trainer.setSpecialization(specialization);
 
-        return trainerService.createTrainer(trainer);
+        TrainerEntity createdTrainer =
+                trainerService.createTrainer(trainer);
+
+        metricsWrapper.recordTrainerRegistered();
+
+        logger.info("Created trainer profile with username: {}",
+                createdTrainer.getUsername());
+
+        return createdTrainer;
     }
 
     public TraineeEntity createTraineeProfile(String firstName, String lastName, LocalDate dateOfBirth, String address) {
@@ -67,8 +79,14 @@ public class GymFacade {
         trainee.setDateOfBirth(dateOfBirth);
         trainee.setAddress(address);
 
-        TraineeEntity createdTrainee = traineeService.createTrainee(trainee);
-        logger.info("Successfully created trainee profile with username: {}", createdTrainee.getUsername());
+        TraineeEntity createdTrainee =
+                traineeService.createTrainee(trainee);
+
+        metricsWrapper.recordTraineeRegistered();
+
+        logger.info("Successfully created trainee profile with username: {}",
+                createdTrainee.getUsername());
+
         return createdTrainee;
     }
 
@@ -237,6 +255,9 @@ public class GymFacade {
         training.setTrainingType(trainer.getSpecialization());
 
         TrainingEntity result = trainingService.createTraining(training);
+
+        metricsWrapper.recordTrainingCreated();
+
         logger.info("Successfully added training with ID: {}", result.getId());
         return result;
     }
