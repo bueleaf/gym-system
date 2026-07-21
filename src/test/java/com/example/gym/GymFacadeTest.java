@@ -1,5 +1,6 @@
 package com.example.gym;
 
+import com.example.gym.actuator.metric.MetricsWrapper;
 import com.example.gym.entity.*;
 import com.example.gym.facade.GymFacade;
 import com.example.gym.dto.request.AddTrainingRequest;
@@ -24,6 +25,7 @@ class GymFacadeTest {
     @Mock private TrainingService trainingService;
     @Mock private TrainingTypeService trainingTypeService;
     @Mock private AuthenticationService authenticationService;
+    @Mock private MetricsWrapper metricsWrapper;
 
     @InjectMocks private GymFacade gymFacade;
 
@@ -62,6 +64,7 @@ class GymFacadeTest {
 
         assertThat(result).isSameAs(trainer);
         verify(trainerService).createTrainer(any());
+        verify(metricsWrapper).recordTrainerRegistered();
     }
 
     @Test
@@ -84,6 +87,7 @@ class GymFacadeTest {
 
         assertThat(result).isSameAs(trainee);
         verify(traineeService).createTrainee(any());
+        verify(metricsWrapper).recordTraineeRegistered();
     }
 
     @Test
@@ -153,6 +157,7 @@ class GymFacadeTest {
         assertThat(result.getTrainingName()).isEqualTo("Morning Yoga");
         assertThat(result.getTrainee()).isSameAs(targetTrainee);
         assertThat(result.getTrainer()).isSameAs(targetTrainer);
+        verify(metricsWrapper).recordTrainingCreated();
     }
 
     @Test
