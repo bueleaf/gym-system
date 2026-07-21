@@ -1,7 +1,8 @@
 package com.example.gym.controller;
 
 import com.example.gym.dto.request.ChangePasswordRequest;
-import com.example.gym.facade.GymFacade;
+import com.example.gym.dto.request.LoginRequest;
+import com.example.gym.service.AuthenticationService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -16,22 +17,17 @@ import jakarta.validation.Valid;
 @RequestMapping("/api/login")
 @Api(tags = "Authentication")
 public class AuthController {
-    private GymFacade gymFacade;
+    private AuthenticationService authenticationService;
 
     @ApiOperation("Authenticate user")
     @ApiResponses({
             @ApiResponse(code = 200, message = "Authentication successful"),
             @ApiResponse(code = 401, message = "Authentication failed")
     })
-    @GetMapping
+    @PostMapping
     public ResponseEntity<Void> login(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-
-        gymFacade.authenticateUser(
-                username,
-                password
-        );
+            @Valid @RequestBody LoginRequest request) {
+        authenticationService.authenticate(request.username(), request.password());
 
         return ResponseEntity.ok().build();
     }
@@ -47,7 +43,7 @@ public class AuthController {
             @Valid @RequestBody
             ChangePasswordRequest request) {
 
-        gymFacade.changePassword(
+        authenticationService.changePassword(
                 request.username(),
                 request.oldPassword(),
                 request.newPassword()
@@ -57,7 +53,7 @@ public class AuthController {
     }
 
     @Autowired
-    public void getGymFacade(GymFacade gymFacade) {
-        this.gymFacade = gymFacade;
+    public void setAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 }

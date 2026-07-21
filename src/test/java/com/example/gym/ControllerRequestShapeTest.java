@@ -3,10 +3,12 @@ package com.example.gym;
 import com.example.gym.controller.AuthController;
 import com.example.gym.controller.TraineeController;
 import com.example.gym.controller.TrainingController;
+import com.example.gym.application.TraineeManagementService;
+import com.example.gym.application.TrainingManagementService;
+import com.example.gym.service.AuthenticationService;
 import com.example.gym.dto.response.ApiErrorResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.exception.GlobalExceptionHandler;
-import com.example.gym.facade.GymFacade;
 import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +41,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ControllerRequestShapeTest {
 
     @Mock
-    private GymFacade gymFacade;
+    private AuthenticationService authenticationService;
+    @Mock
+    private TraineeManagementService traineeManagementService;
+    @Mock
+    private TrainingManagementService trainingManagementService;
 
     private MockMvc authMvc;
     private MockMvc traineeMvc;
@@ -49,13 +55,13 @@ class ControllerRequestShapeTest {
     @BeforeEach
     void setUp() {
         AuthController authController = new AuthController();
-        authController.getGymFacade(gymFacade);
+        authController.setAuthenticationService(authenticationService);
 
         TraineeController traineeController = new TraineeController();
-        traineeController.setGymFacade(gymFacade);
+        traineeController.setTraineeManagementService(traineeManagementService);
 
         TrainingController trainingController = new TrainingController();
-        trainingController.setGymFacade(gymFacade);
+        trainingController.setTrainingManagementService(trainingManagementService);
 
         GlobalExceptionHandler exceptionHandler =
                 new GlobalExceptionHandler();
@@ -87,13 +93,13 @@ class ControllerRequestShapeTest {
     }
 
     @Test
-    void login_usesUsernameAndPasswordQueryParameters() throws Exception {
-        authMvc.perform(get("/api/login")
-                        .param("username", "john.doe")
-                        .param("password", "pass"))
+    void login_usesUsernameAndPasswordRequestBody() throws Exception {
+        authMvc.perform(post("/api/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"username\":\"john.doe\",\"password\":\"pass\"}"))
                 .andExpect(status().isOk());
 
-        verify(gymFacade).authenticateUser("john.doe", "pass");
+        verify(authenticationService).authenticate("john.doe", "pass");
     }
 
     @Test
@@ -101,7 +107,7 @@ class ControllerRequestShapeTest {
             throws Exception {
 
         TraineeEntity trainee = trainee("john.doe");
-        when(gymFacade.getTraineeByUsername("john.doe", "pass"))
+        when(traineeManagementService.getProfile("john.doe", "pass"))
                 .thenReturn(trainee);
 
         traineeMvc.perform(get("/api/trainees")
@@ -109,7 +115,7 @@ class ControllerRequestShapeTest {
                         .param("password", "pass"))
                 .andExpect(status().isOk());
 
-        verify(gymFacade).getTraineeByUsername("john.doe", "pass");
+        verify(traineeManagementService).getProfile("john.doe", "pass");
     }
 
     @Test
@@ -121,7 +127,7 @@ class ControllerRequestShapeTest {
         trainee.setLastName("Smith");
         trainee.setActive(false);
 
-        when(gymFacade.updateTraineeProfile(
+        when(traineeManagementService.updateProfile(
                 eq("john.doe"),
                 eq("pass"),
                 any()))
@@ -140,7 +146,7 @@ class ControllerRequestShapeTest {
                                 """))
                 .andExpect(status().isOk());
 
-        verify(gymFacade).updateTraineeProfile(
+        verify(traineeManagementService).updateProfile(
                 eq("john.doe"),
                 eq("pass"),
                 any());
@@ -150,7 +156,7 @@ class ControllerRequestShapeTest {
     void getTraineeTrainings_usesUsernameAndPasswordQueryParameters()
             throws Exception {
 
-        when(gymFacade.getTraineeTrainings(
+        when(trainingManagementService.getTraineeTrainings(
                 eq("john.doe"),
                 eq("pass"),
                 any()))
@@ -168,7 +174,7 @@ class ControllerRequestShapeTest {
         ArgumentCaptor<TraineeTrainingSearchCriteria> criteriaCaptor =
                 ArgumentCaptor.forClass(TraineeTrainingSearchCriteria.class);
 
-        verify(gymFacade).getTraineeTrainings(
+        verify(trainingManagementService).getTraineeTrainings(
                 eq("john.doe"),
                 eq("pass"),
                 criteriaCaptor.capture());
@@ -183,7 +189,7 @@ class ControllerRequestShapeTest {
     void getTrainerTrainings_usesDateAndTraineeFilters()
             throws Exception {
 
-        when(gymFacade.getTrainerTrainings(
+        when(trainingManagementService.getTrainerTrainings(
                 eq("mike.smith"),
                 eq("pass"),
                 any()))
@@ -200,7 +206,7 @@ class ControllerRequestShapeTest {
         ArgumentCaptor<TrainerTrainingSearchCriteria> criteriaCaptor =
                 ArgumentCaptor.forClass(TrainerTrainingSearchCriteria.class);
 
-        verify(gymFacade).getTrainerTrainings(
+        verify(trainingManagementService).getTrainerTrainings(
                 eq("mike.smith"),
                 eq("pass"),
                 criteriaCaptor.capture());

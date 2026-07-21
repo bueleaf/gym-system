@@ -8,7 +8,7 @@ import com.example.gym.dto.response.TrainerTrainingResponse;
 import com.example.gym.dto.response.TrainingTypeResponse;
 import com.example.gym.entity.TrainingEntity;
 import com.example.gym.entity.TrainingTypeEntity;
-import com.example.gym.facade.GymFacade;
+import com.example.gym.application.TrainingManagementService;
 import com.example.gym.util.ValidationUtility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -27,7 +27,7 @@ import java.util.List;
 @RequestMapping("/api")
 @Api(tags = "Trainings")
 public class TrainingController {
-    private GymFacade gymFacade;
+    private TrainingManagementService trainingManagementService;
 
     @ApiOperation("Get trainee trainings using optional search criteria")
     @ApiResponses({
@@ -70,7 +70,7 @@ public class TrainingController {
                 );
 
         List<TraineeTrainingResponse> response =
-                gymFacade.getTraineeTrainings(
+                trainingManagementService.getTraineeTrainings(
                                 username,
                                 password,
                                 criteria
@@ -119,7 +119,7 @@ public class TrainingController {
                 );
 
         List<TrainerTrainingResponse> response =
-                gymFacade.getTrainerTrainings(
+                trainingManagementService.getTrainerTrainings(
                                 username,
                                 password,
                                 criteria
@@ -142,7 +142,7 @@ public class TrainingController {
     public ResponseEntity<Void> addTraining(
             @Valid @RequestBody AddTrainingRequest request) {
 
-        gymFacade.addTraining(
+        trainingManagementService.addTraining(
                 request.username(),
                 request.password(),
                 request
@@ -198,7 +198,7 @@ public class TrainingController {
     }
 
     @Autowired
-    public void setGymFacade(GymFacade gymFacade) {
-        this.gymFacade = gymFacade;
+    public void setTrainingManagementService(TrainingManagementService trainingManagementService) {
+        this.trainingManagementService = trainingManagementService;
     }
 }
