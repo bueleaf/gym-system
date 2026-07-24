@@ -10,7 +10,7 @@ import com.example.gym.dto.response.TrainingTypeResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingTypeEntity;
-import com.example.gym.facade.GymFacade;
+import com.example.gym.application.TrainerManagementService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -20,14 +20,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainers")
 @Api(tags = "Trainers")
 public class TrainerController {
-    private GymFacade gymFacade;
+    private TrainerManagementService trainerManagementService;
 
     @ApiOperation("Register a new trainer")
     @ApiResponses({
@@ -40,11 +40,7 @@ public class TrainerController {
             @Valid @RequestBody TrainerRegistrationRequest request) {
 
         TrainerEntity created =
-                gymFacade.createTrainerProfile(
-                        request.firstName(),
-                        request.lastName(),
-                        request.trainingTypeName()
-                );
+                trainerManagementService.register(request);
 
         CredentialsResponse response =
                 new CredentialsResponse(
@@ -69,7 +65,7 @@ public class TrainerController {
             @RequestParam("password") String password) {
 
         TrainerEntity trainer =
-                gymFacade.getTrainerByUsername(
+                trainerManagementService.getProfile(
                         username,
                         password
                 );
@@ -91,7 +87,7 @@ public class TrainerController {
             @Valid @RequestBody UpdateTrainerProfileRequest request) {
 
         TrainerEntity updated =
-                gymFacade.updateTrainerProfile(
+                trainerManagementService.updateProfile(
                         request.username(),
                         request.password(),
                         request
@@ -115,15 +111,9 @@ public class TrainerController {
             @Valid @RequestBody ActivationRequest request) {
 
         if (request.active()) {
-            gymFacade.activateTrainer(
-                    request.username(),
-                    request.password()
-            );
+            trainerManagementService.changeActiveStatus(request.username(), request.password(), true);
         } else {
-            gymFacade.deactivateTrainer(
-                    request.username(),
-                    request.password()
-            );
+            trainerManagementService.changeActiveStatus(request.username(), request.password(), false);
         }
 
         return ResponseEntity.ok().build();
@@ -170,7 +160,7 @@ public class TrainerController {
     }
 
     @Autowired
-    public void setGymFacade(GymFacade gymFacade) {
-        this.gymFacade = gymFacade;
+    public void setTrainerManagementService(TrainerManagementService trainerManagementService) {
+        this.trainerManagementService = trainerManagementService;
     }
 }

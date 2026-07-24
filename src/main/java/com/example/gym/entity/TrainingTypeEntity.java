@@ -1,6 +1,6 @@
 package com.example.gym.entity;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 @Entity
 @Table(name = "training_types")

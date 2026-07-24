@@ -11,7 +11,7 @@ import com.example.gym.dto.response.TrainingTypeResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingTypeEntity;
-import com.example.gym.facade.GymFacade;
+import com.example.gym.application.TraineeManagementService;
 import com.example.gym.util.ValidationUtility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -22,14 +22,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/trainees")
 @Api(tags = "Trainees")
 public class TraineeController {
-    private GymFacade gymFacade;
+    private TraineeManagementService traineeManagementService;
 
     @ApiOperation("Register a new trainee")
     @ApiResponses({
@@ -41,12 +41,7 @@ public class TraineeController {
             @Valid @RequestBody TraineeRegistrationRequest request) {
 
         TraineeEntity created =
-                gymFacade.createTraineeProfile(
-                        request.firstName(),
-                        request.lastName(),
-                        request.dateOfBirth(),
-                        request.address()
-                );
+                traineeManagementService.register(request);
 
         CredentialsResponse response =
                 new CredentialsResponse(
@@ -71,7 +66,7 @@ public class TraineeController {
             @RequestParam("password") String password) {
 
         TraineeEntity trainee =
-                gymFacade.getTraineeByUsername(
+                traineeManagementService.getProfile(
                         username,
                         password
                 );
@@ -93,7 +88,7 @@ public class TraineeController {
             @Valid @RequestBody UpdateTraineeProfileRequest request) {
 
         TraineeEntity updated =
-                gymFacade.updateTraineeProfile(
+                traineeManagementService.updateProfile(
                         request.username(),
                         request.password(),
                         request
@@ -115,7 +110,7 @@ public class TraineeController {
             @RequestParam("username") String username,
             @RequestParam("password") String password) {
 
-        gymFacade.deleteTraineeProfile(
+        traineeManagementService.deleteProfile(
                 username,
                 password
         );
@@ -136,15 +131,9 @@ public class TraineeController {
             @Valid @RequestBody ActivationRequest request) {
 
         if (request.active()) {
-            gymFacade.activateTrainee(
-                    request.username(),
-                    request.password()
-            );
+            traineeManagementService.changeActiveStatus(request.username(), request.password(), true);
         } else {
-            gymFacade.deactivateTrainee(
-                    request.username(),
-                    request.password()
-            );
+            traineeManagementService.changeActiveStatus(request.username(), request.password(), false);
         }
 
         return ResponseEntity.ok().build();
@@ -163,7 +152,7 @@ public class TraineeController {
             @RequestParam("password") String password) {
 
         List<TrainerSummaryResponse> response =
-                gymFacade.getUnassignedTrainers(
+                traineeManagementService.getUnassignedTrainers(
                                 username,
                                 password
                         )
@@ -192,7 +181,7 @@ public class TraineeController {
         );
 
         List<TrainerSummaryResponse> response =
-                gymFacade.updateTraineeTrainers(
+                traineeManagementService.updateTrainers(
                                 request.traineeUsername(),
                                 request.password(),
                                 request.trainerUsernames()
@@ -247,7 +236,7 @@ public class TraineeController {
     }
 
     @Autowired
-    public void setGymFacade(GymFacade gymFacade) {
-        this.gymFacade = gymFacade;
+    public void setTraineeManagementService(TraineeManagementService traineeManagementService) {
+        this.traineeManagementService = traineeManagementService;
     }
 }

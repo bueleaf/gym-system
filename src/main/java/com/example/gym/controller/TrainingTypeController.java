@@ -1,7 +1,7 @@
 package com.example.gym.controller;
 
 import com.example.gym.dto.response.TrainingTypeResponse;
-import com.example.gym.facade.GymFacade;
+import com.example.gym.application.TrainingManagementService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
@@ -17,7 +17,7 @@ import java.util.List;
 @Api(tags = "Training Types")
 public class TrainingTypeController {
 
-    private GymFacade gymFacade;
+    private TrainingManagementService trainingManagementService;
 
     @ApiOperation("Get all available training types")
     @ApiResponses({
@@ -30,7 +30,7 @@ public class TrainingTypeController {
             @RequestParam("password") String password) {
 
         List<TrainingTypeResponse> response =
-                gymFacade.getTrainingTypes(
+                trainingManagementService.getTrainingTypes(
                                 username,
                                 password
                         )
@@ -45,7 +45,7 @@ public class TrainingTypeController {
     }
 
     @Autowired
-    public void setGymFacade(GymFacade gymFacade) {
-        this.gymFacade = gymFacade;
+    public void setTrainingManagementService(TrainingManagementService trainingManagementService) {
+        this.trainingManagementService = trainingManagementService;
     }
 }

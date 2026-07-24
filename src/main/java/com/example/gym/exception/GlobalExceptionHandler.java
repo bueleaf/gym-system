@@ -13,8 +13,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
-import javax.persistence.EntityNotFoundException;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.persistence.EntityNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 

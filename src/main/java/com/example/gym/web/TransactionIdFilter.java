@@ -3,20 +3,22 @@ package com.example.gym.web;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.stereotype.Component;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 import org.springframework.web.util.ContentCachingResponseWrapper;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@Component
 public class TransactionIdFilter extends OncePerRequestFilter {
 
     private static final Logger logger =
@@ -46,7 +48,7 @@ public class TransactionIdFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
 
         ContentCachingRequestWrapper wrappedRequest =
-                new ContentCachingRequestWrapper(request);
+                new ContentCachingRequestWrapper(request, MAX_LOGGED_BODY_LENGTH);
         ContentCachingResponseWrapper wrappedResponse =
                 new ContentCachingResponseWrapper(response);
 

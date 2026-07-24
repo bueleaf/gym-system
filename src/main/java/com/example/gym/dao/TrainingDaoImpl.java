@@ -5,7 +5,7 @@ import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
 import com.example.gym.entity.TrainingEntity;
 import org.springframework.stereotype.Repository;
 
-import javax.persistence.TypedQuery;
+import jakarta.persistence.TypedQuery;
 import java.time.LocalDate;
 import java.util.List;
 
