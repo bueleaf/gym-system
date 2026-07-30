@@ -1,7 +1,7 @@
 package com.example.gym.dao;
 
-import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
-import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import com.example.gym.entity.TrainingEntity;
 import java.util.List;
 

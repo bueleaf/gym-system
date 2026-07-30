@@ -21,3 +21,13 @@ management:
   endpoint:
     health:
       show-details: always
+
+security:
+  cors:
+    allowed-origins: http://localhost:3000, http://localhost:5173
+
+  jwt:
+    public-key: classpath:keys/public.pem
+    private-key: classpath:keys/private.pem
+    expiration: PT30M
+    issuer: gym-system

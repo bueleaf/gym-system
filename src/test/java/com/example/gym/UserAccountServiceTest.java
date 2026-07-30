@@ -1,62 +1,40 @@
 package com.example.gym;
 
+import com.example.gym.dao.UserDao;
+import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.service.CredentialsService;
 import com.example.gym.service.UserAccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserAccountServiceTest {
-
+    @Mock private UserDao userDao;
     @Mock private CredentialsService credentialsService;
+    @Mock private PasswordEncoder passwordEncoder;
     @InjectMocks private UserAccountService userAccountService;
 
     @Test
-    void initializeNewAccount_setsUsernamePasswordAndActive() {
-        TraineeEntity u = new TraineeEntity();
-        u.setFirstName("John");
-        u.setLastName("Doe");
+    void initializeNewAccountStoresEncodedPasswordAndReturnsRawCredentials() {
+        TraineeEntity user = new TraineeEntity();
+        user.setFirstName("John");
+        user.setLastName("Doe");
+        when(credentialsService.generateUniqueUsername("John", "Doe"))
+                .thenReturn("john.doe");
+        when(credentialsService.generatePassword()).thenReturn("raw-password");
+        when(passwordEncoder.encode("raw-password")).thenReturn("encoded-password");
 
-        when(credentialsService.generateUniqueUsername("John","Doe"))
-                .thenReturn("John.Doe");
-        when(credentialsService.generatePassword()).thenReturn("pass123");
+        CredentialsResponse response = userAccountService.initializeNewAccount(user);
 
-        userAccountService.initializeNewAccount(u);
-
-        assertThat(u.getUsername()).isEqualTo("John.Doe");
-        assertThat(u.getPassword()).isEqualTo("pass123");
-        assertThat(u.isActive()).isTrue();
-    }
-
-    @Test
-    void changePassword_rejectsBlank() {
-        TraineeEntity u = new TraineeEntity();
-
-        assertThatThrownBy(() -> userAccountService.changePassword(u," "))
-                .isInstanceOf(IllegalArgumentException.class);
-    }
-
-    @Test
-    void activate_nonIdempotent() {
-        TraineeEntity u = new TraineeEntity();
-        u.setActive(true);
-
-        assertThatThrownBy(() -> userAccountService.activate(u,"x"))
-                .isInstanceOf(IllegalStateException.class);
-    }
-
-    @Test
-    void deactivate_nonIdempotent() {
-        TraineeEntity u = new TraineeEntity();
-        u.setActive(false);
-
-        assertThatThrownBy(() -> userAccountService.deactivate(u,"x"))
-                .isInstanceOf(IllegalStateException.class);
+        assertThat(response).isEqualTo(new CredentialsResponse("john.doe", "raw-password"));
+        assertThat(user.getPassword()).isEqualTo("encoded-password");
     }
 }

@@ -1,8 +1,8 @@
 package com.example.gym.controller;
 
 import com.example.gym.dto.request.AddTrainingRequest;
-import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
-import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import com.example.gym.dto.response.TraineeTrainingResponse;
 import com.example.gym.dto.response.TrainerTrainingResponse;
 import com.example.gym.dto.response.TrainingTypeResponse;
@@ -16,7 +16,9 @@ import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -39,8 +41,7 @@ public class TrainingController {
     @GetMapping("/trainee-trainings")
     public ResponseEntity<List<TraineeTrainingResponse>>
     getTraineeTrainings(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
+            Authentication authentication,
 
             @RequestParam(name = "fromDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -54,8 +55,8 @@ public class TrainingController {
             String trainerName,
 
             @RequestParam(name = "trainingTypeName", required = false)
-            String trainingTypeName) {
-
+            String trainingTypeName
+    ) {
         ValidationUtility.validateDateRange(
                 fromDate,
                 toDate
@@ -70,9 +71,9 @@ public class TrainingController {
                 );
 
         List<TraineeTrainingResponse> response =
-                trainingManagementService.getTraineeTrainings(
-                                username,
-                                password,
+                trainingManagementService
+                        .getTraineeTrainings(
+                                authentication.getName(),
                                 criteria
                         )
                         .stream()
@@ -92,8 +93,7 @@ public class TrainingController {
     @GetMapping("/trainer-trainings")
     public ResponseEntity<List<TrainerTrainingResponse>>
     getTrainerTrainings(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password,
+            Authentication authentication,
 
             @RequestParam(name = "fromDate", required = false)
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
@@ -104,8 +104,8 @@ public class TrainingController {
             LocalDate toDate,
 
             @RequestParam(name = "traineeName", required = false)
-            String traineeName) {
-
+            String traineeName
+    ) {
         ValidationUtility.validateDateRange(
                 fromDate,
                 toDate
@@ -119,9 +119,9 @@ public class TrainingController {
                 );
 
         List<TrainerTrainingResponse> response =
-                trainingManagementService.getTrainerTrainings(
-                                username,
-                                password,
+                trainingManagementService
+                        .getTrainerTrainings(
+                                authentication.getName(),
                                 criteria
                         )
                         .stream()
@@ -140,15 +140,17 @@ public class TrainingController {
     })
     @PostMapping("/trainings")
     public ResponseEntity<Void> addTraining(
-            @Valid @RequestBody AddTrainingRequest request) {
-
+            Authentication authentication,
+            @Valid @RequestBody AddTrainingRequest request
+    ) {
         trainingManagementService.addTraining(
-                request.username(),
-                request.password(),
+                authentication.getName(),
                 request
         );
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .build();
     }
 
     private TrainerTrainingResponse toTrainerTrainingResponse(

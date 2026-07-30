@@ -2,6 +2,7 @@ package com.example.gym.service;
 
 import com.example.gym.dao.TrainerDao;
 import com.example.gym.dto.request.UpdateTrainerProfileRequest;
+import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.util.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +29,13 @@ public class TrainerService {
     }
 
     @Transactional
-    public TrainerEntity createTrainer(TrainerEntity trainer) {
+    public CredentialsResponse createTrainer(TrainerEntity trainer) {
         ValidationUtility.validateTrainer(trainer);
-        userAccountService.initializeNewAccount(trainer);
+        CredentialsResponse response =
+                userAccountService.initializeNewAccount(trainer);
+
         trainerDao.create(trainer);
-        return trainer;
+        return response;
     }
 
     @Transactional
@@ -59,13 +62,6 @@ public class TrainerService {
 
     public List<TrainerEntity> getAllTrainers() {
         return trainerDao.findAll();
-    }
-
-    @Transactional
-    public void changePassword(String username, String newPassword) {
-        TrainerEntity trainer = findTrainer(username);
-        userAccountService.changePassword(trainer, newPassword);
-        trainerDao.update(trainer);
     }
 
     @Transactional

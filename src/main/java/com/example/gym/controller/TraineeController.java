@@ -1,5 +1,6 @@
 package com.example.gym.controller;
 
+import com.example.gym.application.TraineeManagementService;
 import com.example.gym.dto.request.ActivationRequest;
 import com.example.gym.dto.request.TraineeRegistrationRequest;
 import com.example.gym.dto.request.UpdateTraineeProfileRequest;
@@ -11,18 +12,18 @@ import com.example.gym.dto.response.TrainingTypeResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingTypeEntity;
-import com.example.gym.application.TraineeManagementService;
 import com.example.gym.util.ValidationUtility;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
-import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -38,15 +39,12 @@ public class TraineeController {
     })
     @PostMapping("/registration")
     public ResponseEntity<CredentialsResponse> register(
-            @Valid @RequestBody TraineeRegistrationRequest request) {
-
-        TraineeEntity created =
-                traineeManagementService.register(request);
-
+            @Valid @RequestBody
+            TraineeRegistrationRequest request
+    ) {
         CredentialsResponse response =
-                new CredentialsResponse(
-                        created.getUsername(),
-                        created.getPassword()
+                traineeManagementService.register(
+                        request
                 );
 
         return ResponseEntity
@@ -62,13 +60,11 @@ public class TraineeController {
     })
     @GetMapping
     public ResponseEntity<TraineeProfileResponse> getProfile(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-
+            Authentication authentication
+    ) {
         TraineeEntity trainee =
                 traineeManagementService.getProfile(
-                        username,
-                        password
+                        authentication.getName()
                 );
 
         return ResponseEntity.ok(
@@ -85,12 +81,13 @@ public class TraineeController {
     })
     @PutMapping
     public ResponseEntity<TraineeProfileResponse> updateProfile(
-            @Valid @RequestBody UpdateTraineeProfileRequest request) {
-
+            Authentication authentication,
+            @Valid @RequestBody
+            UpdateTraineeProfileRequest request
+    ) {
         TraineeEntity updated =
                 traineeManagementService.updateProfile(
-                        request.username(),
-                        request.password(),
+                        authentication.getName(),
                         request
                 );
 
@@ -101,26 +98,24 @@ public class TraineeController {
 
     @ApiOperation("Delete trainee profile")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Trainee deleted successfully"),
+            @ApiResponse(code = 204, message = "Trainee deleted successfully"),
             @ApiResponse(code = 401, message = "Authentication failed"),
             @ApiResponse(code = 404, message = "Trainee not found")
     })
     @DeleteMapping
     public ResponseEntity<Void> deleteProfile(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-
+            Authentication authentication
+    ) {
         traineeManagementService.deleteProfile(
-                username,
-                password
+                authentication.getName()
         );
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation("Activate or deactivate trainee profile")
     @ApiResponses({
-            @ApiResponse(code = 200, message = "Status changed successfully"),
+            @ApiResponse(code = 204, message = "Status changed successfully"),
             @ApiResponse(code = 400, message = "Invalid activation data"),
             @ApiResponse(code = 401, message = "Authentication failed"),
             @ApiResponse(code = 404, message = "Trainee not found"),
@@ -128,15 +123,16 @@ public class TraineeController {
     })
     @PatchMapping("/active")
     public ResponseEntity<Void> changeActiveStatus(
-            @Valid @RequestBody ActivationRequest request) {
+            Authentication authentication,
+            @Valid @RequestBody
+            ActivationRequest request
+    ) {
+        traineeManagementService.changeActiveStatus(
+                authentication.getName(),
+                request.active()
+        );
 
-        if (request.active()) {
-            traineeManagementService.changeActiveStatus(request.username(), request.password(), true);
-        } else {
-            traineeManagementService.changeActiveStatus(request.username(), request.password(), false);
-        }
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @ApiOperation("Get active trainers not assigned to the trainee")
@@ -148,13 +144,12 @@ public class TraineeController {
     @GetMapping("/unassigned-trainers")
     public ResponseEntity<List<TrainerSummaryResponse>>
     getUnassignedTrainers(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-
+            Authentication authentication
+    ) {
         List<TrainerSummaryResponse> response =
-                traineeManagementService.getUnassignedTrainers(
-                                username,
-                                password
+                traineeManagementService
+                        .getUnassignedTrainers(
+                                authentication.getName()
                         )
                         .stream()
                         .map(this::toTrainerSummary)
@@ -173,17 +168,18 @@ public class TraineeController {
     @PutMapping("/trainers")
     public ResponseEntity<List<TrainerSummaryResponse>>
     updateTrainerList(
+            Authentication authentication,
             @Valid @RequestBody
-            UpdateTraineeTrainersRequest request) {
-
+            UpdateTraineeTrainersRequest request
+    ) {
         ValidationUtility.validateTrainerUsernames(
                 request.trainerUsernames()
         );
 
         List<TrainerSummaryResponse> response =
-                traineeManagementService.updateTrainers(
-                                request.traineeUsername(),
-                                request.password(),
+                traineeManagementService
+                        .updateTrainers(
+                                authentication.getName(),
                                 request.trainerUsernames()
                         )
                         .stream()
@@ -194,8 +190,8 @@ public class TraineeController {
     }
 
     private TraineeProfileResponse toProfileResponse(
-            TraineeEntity trainee) {
-
+            TraineeEntity trainee
+    ) {
         List<TrainerSummaryResponse> trainers =
                 trainee.getTrainers()
                         .stream()
@@ -214,8 +210,8 @@ public class TraineeController {
     }
 
     private TrainerSummaryResponse toTrainerSummary(
-            TrainerEntity trainer) {
-
+            TrainerEntity trainer
+    ) {
         return new TrainerSummaryResponse(
                 trainer.getUsername(),
                 trainer.getFirstName(),
@@ -227,8 +223,8 @@ public class TraineeController {
     }
 
     private TrainingTypeResponse toTrainingTypeResponse(
-            TrainingTypeEntity type) {
-
+            TrainingTypeEntity type
+    ) {
         return new TrainingTypeResponse(
                 type.getId(),
                 type.getTrainingTypeName()
@@ -236,7 +232,10 @@ public class TraineeController {
     }
 
     @Autowired
-    public void setTraineeManagementService(TraineeManagementService traineeManagementService) {
-        this.traineeManagementService = traineeManagementService;
+    public void setTraineeManagementService(
+            TraineeManagementService traineeManagementService
+    ) {
+        this.traineeManagementService =
+                traineeManagementService;
     }
 }

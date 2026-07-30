@@ -1,8 +1,8 @@
 package com.example.gym.service;
 
 import com.example.gym.dao.TrainingDao;
-import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
-import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import com.example.gym.entity.TrainingEntity;
 import com.example.gym.util.ValidationUtility;
 import org.slf4j.Logger;
