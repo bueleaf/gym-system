@@ -3,6 +3,7 @@ package com.example.gym.service;
 import com.example.gym.dao.TraineeDao;
 import com.example.gym.dao.TrainerDao;
 import com.example.gym.dto.request.UpdateTraineeProfileRequest;
+import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.util.ValidationUtility;
@@ -43,11 +44,13 @@ public class TraineeService {
     }
 
     @Transactional
-    public TraineeEntity createTrainee(TraineeEntity trainee) {
+    public CredentialsResponse createTrainee(TraineeEntity trainee) {
         ValidationUtility.validateUser(trainee);
-        userAccountService.initializeNewAccount(trainee);
+        CredentialsResponse response =
+                userAccountService.initializeNewAccount(trainee);
+
         traineeDao.create(trainee);
-        return trainee;
+        return response;
     }
 
     @Transactional
@@ -81,13 +84,6 @@ public class TraineeService {
 
     public List<TraineeEntity> getAllTrainees() {
         return traineeDao.findAll();
-    }
-
-    @Transactional
-    public void changePassword(String username, String newPassword) {
-        TraineeEntity trainee = findTrainee(username);
-        userAccountService.changePassword(trainee, newPassword);
-        traineeDao.update(trainee);
     }
 
     @Transactional

@@ -2,6 +2,8 @@ package com.example.gym.entity;
 
 import jakarta.persistence.*;
 
+import java.time.Instant;
+
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
@@ -27,6 +29,11 @@ public abstract class UserEntity
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
+    @Column(nullable = false)
+    private int failedLoginAttempts;
+
+    private Instant lockExpiresAt;
+
     public UserEntity() {}
 
     public Long getId() { return id; }
@@ -46,6 +53,14 @@ public abstract class UserEntity
 
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+
+    public int getFailedLoginAttempts() { return failedLoginAttempts; }
+    public void setFailedLoginAttempts(int failedLoginAttempts) {
+        this.failedLoginAttempts = failedLoginAttempts; }
+
+    public Instant getLockExpiresAt() { return lockExpiresAt; }
+    public void setLockExpiresAt(Instant lockExpiresAt) {
+        this.lockExpiresAt = lockExpiresAt; }
 
     @Override
     public boolean equals(Object o) {

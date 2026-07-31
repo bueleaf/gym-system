@@ -6,14 +6,8 @@ import jakarta.validation.constraints.Positive;
 import java.time.LocalDate;
 
 public record AddTrainingRequest(
-        @NotBlank(message = "Username is required")
-        String username,
-        @NotBlank(message = "Password is required")
-        String password,
         @NotBlank(message = "Trainee username is required")
         String traineeUsername,
-        @NotBlank(message = "Trainer username is required")
-        String trainerUsername,
         @NotBlank(message = "Training name is required")
         String trainingName,
         @NotNull(message = "Training date is required")

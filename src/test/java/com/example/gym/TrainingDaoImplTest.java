@@ -2,8 +2,8 @@ package com.example.gym;
 
 import com.example.gym.dao.TrainingDaoImpl;
 import com.example.gym.entity.TrainingEntity;
-import com.example.gym.dto.request.TraineeTrainingSearchCriteria;
-import com.example.gym.dto.request.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.TraineeTrainingSearchCriteria;
+import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,16 +1,11 @@
 package com.example.gym.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+
 import java.util.List;
 
 public record UpdateTraineeTrainersRequest(
-        @NotBlank(message = "Trainee username is required")
-        String traineeUsername,
-        @NotBlank(message = "Password is required")
-        String password,
         @NotNull(message = "Trainer usernames are required")
-        List<@NotBlank(message = "Trainer username is required")
-                String> trainerUsernames
+        List<String> trainerUsernames
 ) {
 }

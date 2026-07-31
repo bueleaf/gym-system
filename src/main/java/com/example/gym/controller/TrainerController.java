@@ -18,6 +18,7 @@ import io.swagger.annotations.ApiResponses;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.validation.Valid;
@@ -38,15 +39,8 @@ public class TrainerController {
     @PostMapping("/registration")
     public ResponseEntity<CredentialsResponse> register(
             @Valid @RequestBody TrainerRegistrationRequest request) {
-
-        TrainerEntity created =
-                trainerManagementService.register(request);
-
         CredentialsResponse response =
-                new CredentialsResponse(
-                        created.getUsername(),
-                        created.getPassword()
-                );
+                trainerManagementService.register(request);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -61,13 +55,11 @@ public class TrainerController {
     })
     @GetMapping
     public ResponseEntity<TrainerProfileResponse> getProfile(
-            @RequestParam("username") String username,
-            @RequestParam("password") String password) {
-
+            Authentication authentication
+    ) {
         TrainerEntity trainer =
                 trainerManagementService.getProfile(
-                        username,
-                        password
+                        authentication.getName()
                 );
 
         return ResponseEntity.ok(
@@ -84,12 +76,13 @@ public class TrainerController {
     })
     @PutMapping
     public ResponseEntity<TrainerProfileResponse> updateProfile(
-            @Valid @RequestBody UpdateTrainerProfileRequest request) {
-
+            Authentication authentication,
+            @Valid @RequestBody
+            UpdateTrainerProfileRequest request
+    ) {
         TrainerEntity updated =
                 trainerManagementService.updateProfile(
-                        request.username(),
-                        request.password(),
+                        authentication.getName(),
                         request
                 );
 
@@ -108,15 +101,15 @@ public class TrainerController {
     })
     @PatchMapping("/active")
     public ResponseEntity<Void> changeActiveStatus(
-            @Valid @RequestBody ActivationRequest request) {
+            Authentication authentication,
+            @Valid @RequestBody ActivationRequest request
+    ) {
+        trainerManagementService.changeActiveStatus(
+                authentication.getName(),
+                request.active()
+        );
 
-        if (request.active()) {
-            trainerManagementService.changeActiveStatus(request.username(), request.password(), true);
-        } else {
-            trainerManagementService.changeActiveStatus(request.username(), request.password(), false);
-        }
-
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     private TrainerProfileResponse toProfileResponse(

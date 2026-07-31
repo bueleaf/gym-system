@@ -7,6 +7,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -22,6 +25,45 @@ import java.util.stream.Collectors;
 public class GlobalExceptionHandler {
     private static final Logger logger =
             LoggerFactory.getLogger(GlobalExceptionHandler.class);
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleBadCredentials(
+            BadCredentialsException exception,
+            HttpServletRequest request
+    ) {
+        return errorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "Invalid username or password",
+                request
+        );
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleDisabled(
+            DisabledException exception,
+            HttpServletRequest request
+    ) {
+        return errorResponse(
+                HttpStatus.UNAUTHORIZED,
+                "User account is inactive",
+                request
+        );
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ResponseEntity<ApiErrorResponse>
+    handleLocked(
+            LockedException exception,
+            HttpServletRequest request
+    ) {
+        return errorResponse(
+                HttpStatus.LOCKED,
+                exception.getMessage(),
+                request
+        );
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiErrorResponse> handleValidation(

@@ -5,10 +5,6 @@ import jakarta.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 public record UpdateTraineeProfileRequest(
-        @NotBlank(message = "Username is required")
-        String username,
-        @NotBlank(message = "Password is required")
-        String password,
         @NotBlank(message = "First name is required")
         String firstName,
         @NotBlank(message = "Last name is required")
