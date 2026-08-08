@@ -153,10 +153,26 @@ public class TrainingController {
                 .build();
     }
 
+    @PostMapping("/trainings/{trainingId}")
+    public ResponseEntity<Void> deleteTraining(
+            Authentication authentication,
+            @PathVariable Long trainingId
+    ) {
+        trainingManagementService.deleteTraining(
+                authentication.getName(),
+                trainingId
+        );
+
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .build();
+    }
+
     private TrainerTrainingResponse toTrainerTrainingResponse(
             TrainingEntity training) {
 
         return new TrainerTrainingResponse(
+                training.getId(),
                 training.getTrainingName(),
                 training.getTrainingDate(),
                 toTrainingTypeResponse(training.getTrainingType()),
@@ -172,6 +188,7 @@ public class TrainingController {
             TrainingEntity training) {
 
         return new TraineeTrainingResponse(
+                training.getId(),
                 training.getTrainingName(),
                 training.getTrainingDate(),
                 toTrainingTypeResponse(training.getTrainingType()),

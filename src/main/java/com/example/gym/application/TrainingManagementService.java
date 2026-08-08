@@ -1,18 +1,21 @@
 package com.example.gym.application;
 
 import com.example.gym.actuator.metric.MetricsWrapper;
+import com.example.gym.client.TrainerWorkloadClient;
 import com.example.gym.dto.request.AddTrainingRequest;
 import com.example.gym.dto.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.TrainerTrainingSearchCriteria;
+import com.example.gym.dto.request.TrainerWorkloadRequest;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingEntity;
-import com.example.gym.entity.TrainingTypeEntity;
+import com.example.gym.model.ActionType;
 import com.example.gym.service.TraineeService;
 import com.example.gym.service.TrainerService;
 import com.example.gym.service.TrainingService;
-import com.example.gym.service.TrainingTypeService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 
 @Service
@@ -21,19 +24,23 @@ public class TrainingManagementService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final MetricsWrapper metricsWrapper;
+    private final TrainerWorkloadClient trainerWorkloadClient;
 
     public TrainingManagementService(
             TrainingService trainingService,
             TraineeService traineeService,
             TrainerService trainerService,
-            MetricsWrapper metricsWrapper) {
+            MetricsWrapper metricsWrapper,
+            TrainerWorkloadClient trainerWorkloadClient) {
         this.trainingService = trainingService;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.metricsWrapper = metricsWrapper;
+        this.trainerWorkloadClient = trainerWorkloadClient;
     }
 
-    public TrainingEntity addTraining(
+    @Transactional
+    public void addTraining(
             String authenticatedTrainerUsername,
             AddTrainingRequest request
     ) {
@@ -70,7 +77,50 @@ public class TrainingManagementService {
 
         metricsWrapper.recordTrainingCreated();
 
-        return created;
+        TrainerWorkloadRequest workloadRequest = new TrainerWorkloadRequest(
+                trainer.getUsername(),
+                trainer.getFirstName(),
+                trainer.getLastName(),
+                trainer.isActive(),
+                created.getTrainingDate(),
+                created.getTrainingDuration(),
+                ActionType.ADD
+        );
+
+        trainerWorkloadClient.updateWorkload(workloadRequest);
+    }
+
+    @Transactional
+    public void deleteTraining(
+            String authenticatedTrainerUsername,
+            Long trainingId
+    )
+    {
+        TrainingEntity training = trainingService.getTraining(trainingId);
+
+        TrainerEntity trainer =
+                trainerService.getTrainerByUsername(
+                        authenticatedTrainerUsername
+                );
+
+        if (!trainer.equals(training.getTrainer()))
+        {
+            throw new SecurityException("Training doesn't belong to trainer");
+        }
+
+        trainingService.deleteTraining(trainingId);
+
+        TrainerWorkloadRequest workloadRequest = new TrainerWorkloadRequest(
+                trainer.getUsername(),
+                trainer.getFirstName(),
+                trainer.getLastName(),
+                trainer.isActive(),
+                training.getTrainingDate(),
+                training.getTrainingDuration(),
+                ActionType.DELETE
+        );
+
+        trainerWorkloadClient.updateWorkload(workloadRequest);
     }
 
     public List<TrainingEntity> getTraineeTrainings(

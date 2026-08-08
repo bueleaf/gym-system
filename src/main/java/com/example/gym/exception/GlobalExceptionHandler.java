@@ -159,6 +159,19 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(TrainingAggregatorUnavailableException.class)
+    public ResponseEntity<ApiErrorResponse> handleTrainerAggregatorUnavailable(
+            TrainingAggregatorUnavailableException exception,
+            HttpServletRequest request
+    )
+    {
+        return errorResponse(
+                HttpStatus.SERVICE_UNAVAILABLE,
+                exception.getMessage(),
+                request
+        );
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiErrorResponse> handleUnexpected(
             Exception exception,

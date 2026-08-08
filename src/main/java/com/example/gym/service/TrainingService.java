@@ -63,6 +63,13 @@ public class TrainingService {
                 criteria);
     }
 
+    public void deleteTraining(Long id)
+    {
+        logger.debug("Deleting training with ID: {}", id);
+
+        trainingDao.delete(id);
+    }
+
     @Autowired
     public void setTrainingDao(TrainingDao trainingDao) {
         this.trainingDao = trainingDao;

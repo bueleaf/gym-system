@@ -13,3 +13,13 @@ spring:
   sql:
     init:
       mode: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      trainingAggregator:
+        slidingWindowSize: 4
+        minimumNumberOfCalls: 2
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 1

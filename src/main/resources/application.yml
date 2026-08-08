@@ -31,3 +31,11 @@ security:
     private-key: classpath:keys/private.pem
     expiration: PT30M
     issuer: gym-system
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+  instance:
+    preferIpAddress: true
