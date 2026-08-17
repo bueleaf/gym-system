@@ -1,0 +1,25 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gym_db
+    username: gym_user
+    password: gym_password
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
+    show-sql: true
+
+  sql:
+    init:
+      mode: always
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      trainingAggregator:
+        slidingWindowSize: 4
+        minimumNumberOfCalls: 2
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        permittedNumberOfCallsInHalfOpenState: 1

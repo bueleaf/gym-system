@@ -1,0 +1,41 @@
+spring:
+  application:
+    name: gym-system
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+          - health
+          - info
+          - metrics
+          - prometheus
+
+  endpoint:
+    health:
+      show-details: always
+
+security:
+  cors:
+    allowed-origins: http://localhost:3000, http://localhost:5173
+
+  jwt:
+    public-key: classpath:keys/public.pem
+    private-key: classpath:keys/private.pem
+    expiration: PT30M
+    issuer: gym-system
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+  instance:
+    preferIpAddress: true

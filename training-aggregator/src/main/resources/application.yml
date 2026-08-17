@@ -1,0 +1,38 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: training-aggregator
+
+  datasource:
+    url: jdbc:h2:mem:workload_db
+    username: db_user
+    password: db_password
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+  h2:
+    console:
+      enabled: true
+logging:
+  level:
+    root: INFO
+
+  pattern:
+    console: "%X{transactionId} %msg%n"
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
+
+  instance:
+    preferIpAddress: true
+
+security:
+  jwt:
+    publicKey: classpath:keys/public.pem
+    issuer: gym-system
