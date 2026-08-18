@@ -1,5 +1,6 @@
 package com.example.gym.entity;
 
+import com.example.gym.model.Role;
 import jakarta.persistence.*;
 
 import java.time.Instant;
@@ -29,6 +30,10 @@ public abstract class UserEntity
     @Column(name = "is_active", nullable = false)
     private boolean isActive;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    private Role role;
+
     @Column(nullable = false)
     private int failedLoginAttempts;
 
@@ -53,6 +58,9 @@ public abstract class UserEntity
 
     public boolean isActive() { return isActive; }
     public void setActive(boolean active) { isActive = active; }
+
+    public Role getRole() { return role; }
+    public void setRole(Role role) { this.role = role; }
 
     public int getFailedLoginAttempts() { return failedLoginAttempts; }
     public void setFailedLoginAttempts(int failedLoginAttempts) {
