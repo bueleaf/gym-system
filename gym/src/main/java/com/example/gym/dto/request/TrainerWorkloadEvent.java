@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDate;
 
-public record TrainerWorkloadRequest(
+public record TrainerWorkloadEvent(
         @NotBlank(message = "Trainer username is required")
         String username,
         @NotBlank(message = "Trainer first name is required")

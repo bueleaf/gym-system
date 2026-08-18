@@ -8,6 +8,11 @@ spring:
       hibernate:
         format_sql: true
 
+  activemq:
+    broker-url: tcp://localhost:61616
+    user: admin
+    password: admin
+
 management:
   endpoints:
     web:
@@ -31,11 +36,3 @@ security:
     private-key: classpath:keys/private.pem
     expiration: PT30M
     issuer: gym-system
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-
-  instance:
-    preferIpAddress: true

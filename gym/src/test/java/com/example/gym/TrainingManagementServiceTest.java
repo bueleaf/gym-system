@@ -2,16 +2,16 @@ package com.example.gym;
 
 import com.example.gym.actuator.metric.MetricsWrapper;
 import com.example.gym.application.TrainingManagementService;
-import com.example.gym.client.TrainerWorkloadClient;
 import com.example.gym.dto.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.TrainerTrainingSearchCriteria;
 import com.example.gym.dto.request.AddTrainingRequest;
-import com.example.gym.dto.request.TrainerWorkloadRequest;
+import com.example.gym.dto.request.TrainerWorkloadEvent;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingEntity;
 import com.example.gym.entity.TrainingTypeEntity;
 import com.example.gym.model.ActionType;
+import com.example.gym.producer.TrainerWorkloadProducer;
 import com.example.gym.service.TraineeService;
 import com.example.gym.service.TrainerService;
 import com.example.gym.service.TrainingService;
@@ -37,7 +37,7 @@ class TrainingManagementServiceTest {
     @Mock private TraineeService traineeService;
     @Mock private TrainerService trainerService;
     @Mock private MetricsWrapper metricsWrapper;
-    @Mock private TrainerWorkloadClient trainerWorkloadClient;
+    @Mock private TrainerWorkloadProducer producer;
 
     @InjectMocks
     private TrainingManagementService trainingManagementService;
@@ -68,7 +68,7 @@ class TrainingManagementServiceTest {
         assertThat(training.getTrainingDuration()).isEqualTo(60);
         assertThat(training.getTrainingType()).isSameAs(trainer.getSpecialization());
         verify(metricsWrapper).recordTrainingCreated();
-        verify(trainerWorkloadClient).updateWorkload(new TrainerWorkloadRequest(
+        verify(producer).send(new TrainerWorkloadEvent(
                 "trainer", "Jane", "Doe", true, request.trainingDate(), 60, ActionType.ADD));
     }
 
@@ -85,7 +85,7 @@ class TrainingManagementServiceTest {
         trainingManagementService.deleteTraining("trainer", 42L);
 
         verify(trainingService).deleteTraining(42L);
-        verify(trainerWorkloadClient).updateWorkload(new TrainerWorkloadRequest(
+        verify(producer).send(new TrainerWorkloadEvent(
                 "trainer", "Jane", "Doe", true, LocalDate.of(2026, 8, 1), 60, ActionType.DELETE));
     }
 
@@ -101,7 +101,7 @@ class TrainingManagementServiceTest {
                 .hasMessage("Training doesn't belong to trainer");
 
         verify(trainingService, never()).deleteTraining(42L);
-        verify(trainerWorkloadClient, never()).updateWorkload(org.mockito.ArgumentMatchers.any());
+        verify(producer, never()).send(org.mockito.ArgumentMatchers.any());
     }
 
     @Test

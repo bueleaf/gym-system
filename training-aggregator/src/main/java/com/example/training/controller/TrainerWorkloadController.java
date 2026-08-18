@@ -1,6 +1,6 @@
 package com.example.training.controller;
 
-import com.example.training.dto.request.TrainerWorkloadRequest;
+import com.example.training.dto.request.TrainerWorkloadEvent;
 import com.example.training.dto.response.TrainerMonthlyWorkloadResponse;
 import com.example.training.service.TrainerWorkloadService;
 import jakarta.validation.Valid;
@@ -18,15 +18,6 @@ public class TrainerWorkloadController
     )
     {
         this.trainerWorkloadService = trainerWorkloadService;
-    }
-
-    @PostMapping
-    public ResponseEntity<Void> updateTrainerWorkload(
-            @Valid @RequestBody TrainerWorkloadRequest request
-    )
-    {
-        trainerWorkloadService.updateWorkload(request);
-        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{username}")

@@ -95,6 +95,11 @@ public class SecurityConfig {
                         ).hasRole("TRAINER")
 
                         .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/trainings/{trainingId}"
+                        ).hasRole("TRAINER")
+
+                        .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/training-types"
                         ).hasAnyRole(
