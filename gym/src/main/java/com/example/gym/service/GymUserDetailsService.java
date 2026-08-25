@@ -1,8 +1,6 @@
 package com.example.gym.service;
 
 import com.example.gym.dao.UserDao;
-import com.example.gym.entity.TraineeEntity;
-import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.UserEntity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,22 +27,10 @@ public class GymUserDetailsService implements UserDetailsService {
                         )
                 );
 
-        String role;
-
-        if (user instanceof TraineeEntity) {
-            role = "TRAINEE";
-        } else if (user instanceof TrainerEntity) {
-            role = "TRAINER";
-        } else {
-            throw new UsernameNotFoundException(
-                    "Invalid username or password"
-            );
-        }
-
         return User.builder()
                 .username(user.getUsername())
                 .password(user.getPassword())
-                .roles(role)
+                .roles(user.getRole().name())
                 .disabled(!user.isActive())
                 .build();
     }

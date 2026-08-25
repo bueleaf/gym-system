@@ -153,7 +153,7 @@ public class TrainingController {
                 .build();
     }
 
-    @PostMapping("/trainings/{trainingId}")
+    @DeleteMapping("/trainings/{trainingId}")
     public ResponseEntity<Void> deleteTraining(
             Authentication authentication,
             @PathVariable Long trainingId

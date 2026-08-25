@@ -1,9 +1,10 @@
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/TrainingAggregatorStarter.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/config/SecurityConfig.java
+/home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/consumer/TrainerWorkloadListener.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/controller/TrainerWorkloadController.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dao/TrainerMonthlySummaryDao.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dao/TrainerMonthlySummaryDaoImpl.java
-/home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dto/request/TrainerWorkloadRequest.java
+/home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dto/request/TrainerWorkloadEvent.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dto/response/ApiErrorResponse.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/dto/response/TrainerMonthlyWorkloadResponse.java
 /home/ubuser/dev/java/epam-lab/gym-system/training-aggregator/src/main/java/com/example/training/entity/TrainerMonthlySummaryEntity.java

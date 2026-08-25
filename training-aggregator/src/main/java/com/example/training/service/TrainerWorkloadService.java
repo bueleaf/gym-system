@@ -1,7 +1,7 @@
 package com.example.training.service;
 
 import com.example.training.dao.TrainerMonthlySummaryDao;
-import com.example.training.dto.request.TrainerWorkloadRequest;
+import com.example.training.dto.request.TrainerWorkloadEvent;
 import com.example.training.dto.response.TrainerMonthlyWorkloadResponse;
 import com.example.training.entity.TrainerMonthlySummaryEntity;
 import com.example.training.exception.InvalidWorkloadException;
@@ -29,27 +29,27 @@ public class TrainerWorkloadService
 
     @Transactional
     public void updateWorkload(
-            TrainerWorkloadRequest trainerWorkloadRequest
+            TrainerWorkloadEvent trainerWorkloadEvent
     )
     {
-        Integer year = trainerWorkloadRequest.trainingDate().getYear();
-        Integer month = trainerWorkloadRequest.trainingDate().getMonthValue();
+        Integer year = trainerWorkloadEvent.trainingDate().getYear();
+        Integer month = trainerWorkloadEvent.trainingDate().getMonthValue();
 
         TrainerMonthlySummaryEntity entity =
                 trainerMonthlySummaryDao.findByUsernameAndMonthAndYear
                 (
-                        trainerWorkloadRequest.username(),
+                        trainerWorkloadEvent.username(),
                         month,
                         year
                 ).orElse(null);
 
         if (entity != null)
         {
-            updateExistingWorkload(entity, trainerWorkloadRequest);
+            updateExistingWorkload(entity, trainerWorkloadEvent);
         }
         else
         {
-            createWorkloadOrThrow(trainerWorkloadRequest);
+            createWorkloadOrThrow(trainerWorkloadEvent);
         }
     }
 
@@ -78,7 +78,7 @@ public class TrainerWorkloadService
 
     private void updateExistingWorkload(
             TrainerMonthlySummaryEntity entity,
-            TrainerWorkloadRequest request
+            TrainerWorkloadEvent request
     )
     {
         int difference = entity.getTrainingDurationTotal()
@@ -127,7 +127,7 @@ public class TrainerWorkloadService
     }
 
     private void createWorkloadOrThrow(
-            TrainerWorkloadRequest request
+            TrainerWorkloadEvent request
     )
     {
         if (request.actionType() == ActionType.ADD)

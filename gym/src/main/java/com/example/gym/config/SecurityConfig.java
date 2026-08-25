@@ -1,5 +1,6 @@
 package com.example.gym.config;
 
+import com.example.gym.model.Role;
 import com.example.gym.service.GymUserDetailsService;
 import com.example.gym.web.JwtLogoutHandler;
 import com.example.gym.web.RestAccessDeniedHandler;
@@ -73,33 +74,38 @@ public class SecurityConfig {
 
                         .requestMatchers(
                                 "/api/trainees/**"
-                        ).hasRole("TRAINEE")
+                        ).hasRole(Role.TRAINEE.name())
 
                         .requestMatchers(
                                 "/api/trainers/**"
-                        ).hasRole("TRAINER")
+                        ).hasRole(Role.TRAINER.name())
 
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/trainee-trainings"
-                        ).hasRole("TRAINEE")
+                        ).hasRole(Role.TRAINEE.name())
 
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/trainer-trainings"
-                        ).hasRole("TRAINER")
+                        ).hasRole(Role.TRAINER.name())
 
                         .requestMatchers(
                                 HttpMethod.POST,
                                 "/api/trainings"
-                        ).hasRole("TRAINER")
+                        ).hasRole(Role.TRAINER.name())
+
+                        .requestMatchers(
+                                HttpMethod.DELETE,
+                                "/api/trainings/{trainingId}"
+                        ).hasRole(Role.TRAINER.name())
 
                         .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/training-types"
                         ).hasAnyRole(
-                                "TRAINEE",
-                                "TRAINER"
+                                Role.TRAINER.name(),
+                                Role.TRAINEE.name()
                         )
 
                         .anyRequest().authenticated()

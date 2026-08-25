@@ -1,7 +1,7 @@
 package com.example.training.service;
 
 import com.example.training.dao.TrainerMonthlySummaryDao;
-import com.example.training.dto.request.TrainerWorkloadRequest;
+import com.example.training.dto.request.TrainerWorkloadEvent;
 import com.example.training.dto.response.TrainerMonthlyWorkloadResponse;
 import com.example.training.entity.TrainerMonthlySummaryEntity;
 import com.example.training.exception.InvalidWorkloadException;
@@ -31,7 +31,7 @@ class TrainerWorkloadServiceTest {
 
     @Test
     void updateWorkloadCreatesSummaryForNewAddRequest() {
-        TrainerWorkloadRequest request = request(ActionType.ADD, 60);
+        TrainerWorkloadEvent request = request(ActionType.ADD, 60);
         when(trainerMonthlySummaryDao.findByUsernameAndMonthAndYear("trainer", 8, 2026))
                 .thenReturn(Optional.empty());
 
@@ -115,8 +115,8 @@ class TrainerWorkloadServiceTest {
                 .hasMessage("No such training summary exists");
     }
 
-    private TrainerWorkloadRequest request(ActionType actionType, int duration) {
-        return new TrainerWorkloadRequest(
+    private TrainerWorkloadEvent request(ActionType actionType, int duration) {
+        return new TrainerWorkloadEvent(
                 "trainer", "Jane", "Doe", true, LocalDate.of(2026, 8, 1), duration, actionType);
     }
 

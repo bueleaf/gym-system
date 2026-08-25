@@ -6,6 +6,7 @@ import com.example.gym.dto.request.UpdateTraineeProfileRequest;
 import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
+import com.example.gym.model.Role;
 import com.example.gym.util.ValidationUtility;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,6 +47,7 @@ public class TraineeService {
     @Transactional
     public CredentialsResponse createTrainee(TraineeEntity trainee) {
         ValidationUtility.validateUser(trainee);
+        trainee.setRole(Role.TRAINEE);
         CredentialsResponse response =
                 userAccountService.initializeNewAccount(trainee);
 

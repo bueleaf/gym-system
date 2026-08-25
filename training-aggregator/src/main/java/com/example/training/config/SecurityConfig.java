@@ -42,11 +42,6 @@ public class SecurityConfig
 
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
-                                HttpMethod.POST,
-                                "/api/workloads"
-                        ).hasRole("TRAINER")
-
-                        .requestMatchers(
                                 HttpMethod.GET,
                                 "/api/workloads"
                         ).hasRole("TRAINER")

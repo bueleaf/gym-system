@@ -4,6 +4,7 @@ import com.example.gym.dao.TrainerDao;
 import com.example.gym.dto.request.UpdateTrainerProfileRequest;
 import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TrainerEntity;
+import com.example.gym.model.Role;
 import com.example.gym.util.ValidationUtility;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -31,6 +32,7 @@ public class TrainerService {
     @Transactional
     public CredentialsResponse createTrainer(TrainerEntity trainer) {
         ValidationUtility.validateTrainer(trainer);
+        trainer.setRole(Role.TRAINER);
         CredentialsResponse response =
                 userAccountService.initializeNewAccount(trainer);
 

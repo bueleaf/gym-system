@@ -4,6 +4,7 @@ import com.example.gym.dao.TraineeDao;
 import com.example.gym.dao.TrainerDao;
 import com.example.gym.dto.response.CredentialsResponse;
 import com.example.gym.entity.TraineeEntity;
+import com.example.gym.model.Role;
 import com.example.gym.service.TraineeService;
 import com.example.gym.service.UserAccountService;
 import org.junit.jupiter.api.Test;
@@ -35,6 +36,7 @@ class TraineeServiceTest {
         CredentialsResponse result = traineeService.createTrainee(trainee);
 
         assertThat(result).isEqualTo(credentials);
+        assertThat(trainee.getRole()).isEqualTo(Role.TRAINEE);
         verify(traineeDao).create(trainee);
     }
 }

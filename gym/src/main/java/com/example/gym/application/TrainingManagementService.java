@@ -1,15 +1,15 @@
 package com.example.gym.application;
 
 import com.example.gym.actuator.metric.MetricsWrapper;
-import com.example.gym.client.TrainerWorkloadClient;
 import com.example.gym.dto.request.AddTrainingRequest;
 import com.example.gym.dto.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.TrainerTrainingSearchCriteria;
-import com.example.gym.dto.request.TrainerWorkloadRequest;
+import com.example.gym.dto.request.TrainerWorkloadEvent;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.entity.TrainerEntity;
 import com.example.gym.entity.TrainingEntity;
 import com.example.gym.model.ActionType;
+import com.example.gym.producer.TrainerWorkloadProducer;
 import com.example.gym.service.TraineeService;
 import com.example.gym.service.TrainerService;
 import com.example.gym.service.TrainingService;
@@ -24,19 +24,20 @@ public class TrainingManagementService {
     private final TraineeService traineeService;
     private final TrainerService trainerService;
     private final MetricsWrapper metricsWrapper;
-    private final TrainerWorkloadClient trainerWorkloadClient;
+    private final TrainerWorkloadProducer producer;
 
     public TrainingManagementService(
             TrainingService trainingService,
             TraineeService traineeService,
             TrainerService trainerService,
             MetricsWrapper metricsWrapper,
-            TrainerWorkloadClient trainerWorkloadClient) {
+            TrainerWorkloadProducer producer
+            ) {
         this.trainingService = trainingService;
         this.traineeService = traineeService;
         this.trainerService = trainerService;
         this.metricsWrapper = metricsWrapper;
-        this.trainerWorkloadClient = trainerWorkloadClient;
+        this.producer = producer;
     }
 
     @Transactional
@@ -77,7 +78,7 @@ public class TrainingManagementService {
 
         metricsWrapper.recordTrainingCreated();
 
-        TrainerWorkloadRequest workloadRequest = new TrainerWorkloadRequest(
+        TrainerWorkloadEvent workloadRequest = new TrainerWorkloadEvent(
                 trainer.getUsername(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
@@ -87,7 +88,7 @@ public class TrainingManagementService {
                 ActionType.ADD
         );
 
-        trainerWorkloadClient.updateWorkload(workloadRequest);
+        producer.send(workloadRequest);
     }
 
     @Transactional
@@ -103,14 +104,14 @@ public class TrainingManagementService {
                         authenticatedTrainerUsername
                 );
 
-        if (!trainer.equals(training.getTrainer()))
+        if (!authenticatedTrainerUsername.equals(training.getTrainer().getUsername()))
         {
             throw new SecurityException("Training doesn't belong to trainer");
         }
 
         trainingService.deleteTraining(trainingId);
 
-        TrainerWorkloadRequest workloadRequest = new TrainerWorkloadRequest(
+        TrainerWorkloadEvent workloadEvent = new TrainerWorkloadEvent(
                 trainer.getUsername(),
                 trainer.getFirstName(),
                 trainer.getLastName(),
@@ -120,7 +121,7 @@ public class TrainingManagementService {
                 ActionType.DELETE
         );
 
-        trainerWorkloadClient.updateWorkload(workloadRequest);
+        producer.send(workloadEvent);
     }
 
     public List<TrainingEntity> getTraineeTrainings(

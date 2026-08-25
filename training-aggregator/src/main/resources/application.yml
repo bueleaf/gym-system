@@ -17,20 +17,21 @@ spring:
   h2:
     console:
       enabled: true
+
+  activemq:
+    broker-url: "tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=3"
+    user: admin
+    password: admin
+
+messaging:
+  trainer-workload-queue: trainer.workload.queue
+
 logging:
   level:
     root: INFO
 
   pattern:
     console: "%X{transactionId} %msg%n"
-
-eureka:
-  client:
-    serviceUrl:
-      defaultZone: ${EUREKA_URI:http://localhost:8761/eureka}
-
-  instance:
-    preferIpAddress: true
 
 security:
   jwt:
