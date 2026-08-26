@@ -1,13 +1,12 @@
 package com.example.training.consumer;
 
 import com.example.training.dto.request.TrainerWorkloadEvent;
+import com.example.training.exception.DocumentNotFoundException;
 import com.example.training.exception.InvalidWorkloadException;
 import com.example.training.service.TrainerWorkloadService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.jms.JMSException;
 import jakarta.jms.Message;
-import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jms.annotation.JmsListener;
@@ -54,7 +53,7 @@ public class TrainerWorkloadListener
                     ex
                     );
         }
-        catch (InvalidWorkloadException | EntityNotFoundException ex)
+        catch (InvalidWorkloadException | DocumentNotFoundException ex)
         {
             LOG.error("Failed to process workload message: {}", json, ex);
             throw ex;

@@ -4,19 +4,10 @@ server:
 spring:
   application:
     name: training-aggregator
-
-  datasource:
-    url: jdbc:h2:mem:workload_db
-    username: db_user
-    password: db_password
-    driver-class-name: org.h2.Driver
-
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
-  h2:
-    console:
-      enabled: true
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/gym_db
+      auto-index-creation: true
 
   activemq:
     broker-url: "tcp://localhost:61616?jms.redeliveryPolicy.maximumRedeliveries=3"
