@@ -1,11 +1,11 @@
 package com.example.integration.cucumber;
 
-import dto.request.AddTrainingRequest;
-import dto.request.TraineeRegistrationRequest;
-import dto.request.TrainerRegistrationRequest;
-import dto.response.CredentialsResponse;
-import dto.response.LoginResponse;
-import dto.response.TrainerMonthlyWorkloadResponse;
+import com.example.integration.dto.request.AddTrainingRequest;
+import com.example.integration.dto.request.TraineeRegistrationRequest;
+import com.example.integration.dto.request.TrainerRegistrationRequest;
+import com.example.integration.dto.response.CredentialsResponse;
+import com.example.integration.dto.response.LoginResponse;
+import com.example.integration.dto.response.TrainerMonthlyWorkloadResponse;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;

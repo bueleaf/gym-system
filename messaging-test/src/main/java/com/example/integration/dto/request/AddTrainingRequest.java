@@ -1,4 +1,4 @@
-package dto.request;
+package com.example.integration.dto.request;
 
 import java.time.LocalDate;
 
