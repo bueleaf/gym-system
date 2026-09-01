@@ -1,5 +1,0 @@
-com/example/training/exception/DocumentNotFoundException.class
-com/example/training/document/YearSummary.class
-com/example/training/document/MonthSummary.class
-com/example/training/document/TrainerMonthlySummaryDocument.class
-com/example/training/repository/TrainerMonthlySummaryRepository.class
