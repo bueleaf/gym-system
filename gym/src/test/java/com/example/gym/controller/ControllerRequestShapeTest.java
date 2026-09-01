@@ -1,9 +1,7 @@
-package com.example.gym;
+package com.example.gym.controller;
 
 import com.example.gym.application.AuthenticationManagementService;
 import com.example.gym.application.TraineeManagementService;
-import com.example.gym.controller.AuthController;
-import com.example.gym.controller.TraineeController;
 import com.example.gym.dto.request.LoginRequest;
 import com.example.gym.dto.response.LoginResponse;
 import com.example.gym.entity.TraineeEntity;

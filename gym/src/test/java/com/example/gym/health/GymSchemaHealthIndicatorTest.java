@@ -1,4 +1,4 @@
-package com.example.gym;
+package com.example.gym.health;
 
 import com.example.gym.actuator.health.GymSchemaHealthIndicator;
 import jakarta.persistence.EntityManager;

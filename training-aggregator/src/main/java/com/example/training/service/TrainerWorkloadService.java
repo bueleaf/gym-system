@@ -9,15 +9,18 @@ import com.example.training.exception.DocumentNotFoundException;
 import com.example.training.exception.InvalidWorkloadException;
 import com.example.training.model.ActionType;
 import com.example.training.repository.TrainerMonthlySummaryRepository;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Validated
 public class TrainerWorkloadService
 {
     private static final Logger LOG =
@@ -34,7 +37,7 @@ public class TrainerWorkloadService
 
     @Transactional
     public void updateWorkload(
-            TrainerWorkloadEvent trainerWorkloadEvent
+            @Valid TrainerWorkloadEvent trainerWorkloadEvent
     )
     {
         TrainerMonthlySummaryDocument document =

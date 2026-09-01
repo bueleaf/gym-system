@@ -1,4 +1,4 @@
-package com.example.gym;
+package com.example.gym.health;
 
 import com.example.gym.actuator.health.TrainingTypeHealthIndicator;
 import com.example.gym.dao.TrainingTypeDao;

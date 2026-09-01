@@ -1,4 +1,4 @@
-package com.example.gym;
+package com.example.gym.service;
 
 import com.example.gym.actuator.metric.MetricsWrapper;
 import com.example.gym.application.TrainingManagementService;
@@ -12,9 +12,6 @@ import com.example.gym.entity.TrainingEntity;
 import com.example.gym.entity.TrainingTypeEntity;
 import com.example.gym.model.ActionType;
 import com.example.gym.producer.TrainerWorkloadProducer;
-import com.example.gym.service.TraineeService;
-import com.example.gym.service.TrainerService;
-import com.example.gym.service.TrainingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;

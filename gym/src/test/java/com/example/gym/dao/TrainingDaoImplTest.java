@@ -1,6 +1,5 @@
-package com.example.gym;
+package com.example.gym.dao;
 
-import com.example.gym.dao.TrainingDaoImpl;
 import com.example.gym.entity.TrainingEntity;
 import com.example.gym.dto.TraineeTrainingSearchCriteria;
 import com.example.gym.dto.TrainerTrainingSearchCriteria;

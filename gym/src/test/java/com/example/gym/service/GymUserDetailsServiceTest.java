@@ -1,9 +1,8 @@
-package com.example.gym;
+package com.example.gym.service;
 
 import com.example.gym.dao.UserDao;
 import com.example.gym.entity.TraineeEntity;
 import com.example.gym.model.Role;
-import com.example.gym.service.GymUserDetailsService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -1,4 +1,4 @@
-package com.example.gym;
+package com.example.gym.metrics;
 
 import com.example.gym.actuator.metric.MetricsWrapper;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;

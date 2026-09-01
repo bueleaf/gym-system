@@ -1,7 +1,6 @@
-package com.example.gym;
+package com.example.gym.service;
 
 import com.example.gym.dao.UserDao;
-import com.example.gym.service.CredentialsService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

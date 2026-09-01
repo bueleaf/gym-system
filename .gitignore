@@ -2,3 +2,4 @@
 gym/target/
 gym/src/main/resources/keys/private.pem
 training-aggregator/target
+messaging-test/target

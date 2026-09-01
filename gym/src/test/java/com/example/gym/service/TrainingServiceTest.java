@@ -1,8 +1,7 @@
-package com.example.gym;
+package com.example.gym.service;
 
 import com.example.gym.dao.TrainingDao;
 import com.example.gym.entity.*;
-import com.example.gym.service.TrainingService;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;

@@ -1,11 +1,8 @@
-package com.example.gym;
+package com.example.gym.service;
 
 import com.example.gym.application.AuthenticationManagementService;
 import com.example.gym.dto.request.LoginRequest;
 import com.example.gym.dto.response.LoginResponse;
-import com.example.gym.service.BruteForceProtectionService;
-import com.example.gym.service.JwtService;
-import com.example.gym.service.UserAccountService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
