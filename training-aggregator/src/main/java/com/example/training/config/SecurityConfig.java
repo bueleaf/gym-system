@@ -46,10 +46,6 @@ public class SecurityConfig
                                 "/api/workloads"
                         ).hasRole("TRAINER")
 
-                        .requestMatchers(
-                                PathRequest.toH2Console()
-                        ).permitAll()
-
                         .anyRequest().authenticated()
                 )
 
@@ -62,13 +58,6 @@ public class SecurityConfig
                                                         jwtAuthenticationConverter
                                                 )
                                 )
-                )
-
-                .headers(headers ->
-                        headers.frameOptions(
-                                HeadersConfigurer
-                                        .FrameOptionsConfig::sameOrigin
-                        )
                 );
 
         return http.build();
