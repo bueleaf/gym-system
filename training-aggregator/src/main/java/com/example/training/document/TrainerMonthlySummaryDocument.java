@@ -5,6 +5,7 @@ import org.springframework.data.mongodb.core.index.CompoundIndex;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Document(collection = "training_summaries")
@@ -26,7 +27,7 @@ public class TrainerMonthlySummaryDocument
 
     private Boolean isActive;
 
-    private List<YearSummary> years;
+    private List<YearSummary> years = new ArrayList<>();
 
     public TrainerMonthlySummaryDocument() {}
 
@@ -47,7 +48,7 @@ public class TrainerMonthlySummaryDocument
     }
 
     public List<YearSummary> getYears() {
-        return years;
+        return new ArrayList<>(years);
     }
 
     public void setLastName(String lastName) {
@@ -58,8 +59,12 @@ public class TrainerMonthlySummaryDocument
         this.isActive = isActive;
     }
 
-    public void setYears(List<YearSummary> years) {
-        this.years = years;
+    public void setYears(List<YearSummary> years)
+    {
+        if (years != null)
+        {
+            this.years = new ArrayList<>(years);
+        }
     }
 
     public void setUsername(String username) {

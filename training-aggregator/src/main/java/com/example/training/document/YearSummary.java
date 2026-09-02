@@ -7,21 +7,25 @@ public class YearSummary
 {
     private Integer year;
 
-    private List<MonthSummary> months;
+    private List<MonthSummary> months = new ArrayList<>();
 
     public Integer getYear() {
         return year;
     }
 
     public List<MonthSummary> getMonths() {
-        return months;
+        return new ArrayList<>(months);
     }
 
     public void setYear(Integer year) {
         this.year = year;
     }
 
-    public void setMonths(List<MonthSummary> months) {
-        this.months = months;
+    public void setMonths(List<MonthSummary> months)
+    {
+        if (months != null)
+        {
+            this.months = new ArrayList<>(months);
+        }
     }
 }
