@@ -1,40 +1,54 @@
 package com.example.training.cucumber;
 
-import com.example.training.document.MonthSummary;
-import com.example.training.document.TrainerMonthlySummaryDocument;
-import com.example.training.document.YearSummary;
+import com.example.training.consumer.TrainerWorkloadListener;
 import com.example.training.dto.request.TrainerWorkloadEvent;
+import com.example.training.dto.response.TrainerMonthlyWorkloadResponse;
 import com.example.training.model.ActionType;
 import com.example.training.repository.TrainerMonthlySummaryRepository;
-import com.example.training.service.TrainerWorkloadService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.cucumber.java.Before;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import jakarta.jms.Message;
 import jakarta.validation.ConstraintViolationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.MvcResult;
 
 import java.time.LocalDate;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.jwt;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TrainerWorkloadSteps
 {
-    private final TrainerWorkloadService service;
+    private final ObjectMapper objectMapper;
+    private final MockMvc mockMvc;
     private final TrainerMonthlySummaryRepository repository;
+    private final TrainerWorkloadListener listener;
 
     private String username;
     private TrainerWorkloadEvent event;
-    private long repositoryCountBefore;
+    private Exception thrownException;
 
     private static final Integer MONTH = 9;
     private static final Integer YEAR = 2026;
 
-    public TrainerWorkloadSteps(TrainerWorkloadService service,
-                                TrainerMonthlySummaryRepository repository)
+    public TrainerWorkloadSteps(
+            ObjectMapper objectMapper,
+            MockMvc mockMvc,
+            TrainerMonthlySummaryRepository repository,
+            TrainerWorkloadListener listener
+    )
     {
-        this.service = service;
+        this.objectMapper = objectMapper;
+        this.mockMvc = mockMvc;
         this.repository = repository;
+        this.listener = listener;
     }
 
     @Before
@@ -47,15 +61,12 @@ public class TrainerWorkloadSteps
     public void noWorkloadExists(String username)
     {
         this.username = username;
-
-        repository.findByUsername(username)
-                .ifPresent(repository::delete);
     }
 
     @When("ADD workload event of {int} minutes is processed")
-    public void addEventOfMinutes(int minutes)
+    public void addEventOfMinutes(int minutes) throws Exception
     {
-        TrainerWorkloadEvent event = new TrainerWorkloadEvent(
+        TrainerWorkloadEvent workload = new TrainerWorkloadEvent(
                 username,
                 "RandomName",
                 "RandomSurname",
@@ -65,33 +76,40 @@ public class TrainerWorkloadSteps
                 ActionType.ADD
         );
 
-        service.updateWorkload(event);
-    }
+        String json = objectMapper.writeValueAsString(workload);
+        Message message = mock(Message.class);
+
+        listener.receive(json, message);
+}
 
     @Then("trainer workload should contain {int} minutes")
-    public void checkMinutes(int expectedMinutes)
+    public void checkMinutes(int expectedMinutes) throws Exception
     {
-        TrainerMonthlySummaryDocument document =
-                repository.findByUsername(username)
-                .orElseThrow();
+        MvcResult result = mockMvc.perform(
+                get("/api/workloads/{username}", username)
+                        .param("month", MONTH.toString())
+                        .param("year", YEAR.toString())
+                        .with(jwt()
+                                .jwt(jwt ->
+                                        jwt.subject(username))
+                                .authorities(
+                                        new SimpleGrantedAuthority("ROLE_TRAINER")
+                                )
+                        )
+        ).andExpect(status().isOk()).andReturn();
 
-        YearSummary ys = document.getYears().stream()
-                .filter(e -> e.getYear().equals(YEAR))
-                .findFirst()
-                .orElseThrow();
+        TrainerMonthlyWorkloadResponse response =
+                objectMapper.readValue(
+                        result.getResponse().getContentAsString(),
+                        TrainerMonthlyWorkloadResponse.class
+                );
 
-        MonthSummary ms = ys.getMonths().stream()
-                .filter(e -> e.getMonth().equals(MONTH))
-                .findFirst().orElseThrow();
-
-        assertEquals(expectedMinutes, ms.getTrainingDurationTotal());
+        assertEquals(expectedMinutes, response.trainingDurationTotal());
     }
 
     @Given("workload event without trainer username")
     public void workloadEventWithoutUsername()
     {
-        repositoryCountBefore = repository.count();
-
         event = new TrainerWorkloadEvent(
                 "",
                 "RandomName",
@@ -104,15 +122,44 @@ public class TrainerWorkloadSteps
     }
 
     @When("workload event is processed")
-    public void workloadEventIsProcessed()
+    public void workloadEventIsProcessed() throws Exception
     {
-        assertThrows(ConstraintViolationException.class,
-                () -> service.updateWorkload(event));
+        String json = objectMapper.writeValueAsString(event);
+        Message message = mock(Message.class);
+
+        try
+        {
+            listener.receive(json, message);
+        }
+        catch (ConstraintViolationException ex)
+        {
+            thrownException = ex;
+        }
+    }
+
+    @Then("workload event is rejected")
+    public void workloadEventIsRejected()
+    {
+        assertInstanceOf(
+                ConstraintViolationException.class,
+                thrownException
+        );
     }
 
     @Then("no trainer workload is created")
-    public void noTrainerWorkloadIsCreated()
+    public void noTrainerWorkloadIsCreated() throws Exception
     {
-        assertEquals(repositoryCountBefore, repository.count());
+        MvcResult result = mockMvc.perform(
+                get("/api/workloads/{username}", username)
+                        .param("month", MONTH.toString())
+                        .param("year", YEAR.toString())
+                        .with(jwt()
+                                .jwt(jwt ->
+                                        jwt.subject("trainer.test"))
+                                .authorities(
+                                        new SimpleGrantedAuthority("ROLE_TRAINER")
+                                )
+                        )
+        ).andExpect(status().isNotFound()).andReturn();
     }
 }

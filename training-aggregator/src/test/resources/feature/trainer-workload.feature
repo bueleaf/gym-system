@@ -8,4 +8,5 @@ Feature: Trainer workload add
     Scenario: Reject workload event without trainer username
         Given workload event without trainer username
         When workload event is processed
-        Then no trainer workload is created
+        Then workload event is rejected
+        And no trainer workload is created
