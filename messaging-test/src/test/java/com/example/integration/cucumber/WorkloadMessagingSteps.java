@@ -9,39 +9,54 @@ import com.example.integration.dto.response.TrainerMonthlyWorkloadResponse;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import org.junit.Before;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 import java.time.LocalDate;
+import java.util.UUID;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.jupiter.api.Assertions.*;
 
 public class WorkloadMessagingSteps
 {
-    private final RestClient gymRestClient =
-            RestClient.create("http://localhost:8080");
+    private RestClient gymRestClient()
+    {
+        return RestClient.create(MessagingEnvironment.gymUrl());
+    }
 
-    private final RestClient aggregatorRestClient =
-            RestClient.create("http://localhost:8081");
+    private RestClient aggregatorRestClient()
+    {
+        return RestClient.create(MessagingEnvironment.aggregatorUrl());
+    }
 
     private String trainerUsername;
     private String traineeUsername;
     private CredentialsResponse response;
     private LoginResponse loginResponse;
+    private String suffix;
+
+    @Before
+    public void beforeScenario()
+    {
+        suffix = UUID.randomUUID()
+                .toString()
+                .substring(0, 8);
+    }
 
     @Given("trainee and trainer exist in Gym")
     public void trainerExists()
     {
         TrainerRegistrationRequest requestTrainer = new TrainerRegistrationRequest(
-                "trainer",
+                "trainer" + suffix,
                 "test",
                 "Yoga"
         );
 
-        response = gymRestClient.post()
+        response = gymRestClient().post()
                 .uri("api/trainers/registration")
                 .body(requestTrainer)
                 .retrieve()
@@ -50,19 +65,19 @@ public class WorkloadMessagingSteps
         trainerUsername = response.username();
 
         TraineeRegistrationRequest requestTrainee = new TraineeRegistrationRequest(
-                "trainee",
+                "trainee" + suffix,
                 "test",
                 LocalDate.now(),
                 "address"
         );
 
-        loginResponse = gymRestClient.post()
+        loginResponse = gymRestClient().post()
                 .uri("api/login")
                 .body(response)
                 .retrieve()
                 .body(LoginResponse.class);
 
-        traineeUsername = gymRestClient.post()
+        traineeUsername = gymRestClient().post()
                 .uri("api/trainees/registration")
                 .body(requestTrainee)
                 .retrieve()
@@ -75,7 +90,7 @@ public class WorkloadMessagingSteps
     {
         assertThrows(
                 HttpClientErrorException.NotFound.class,
-                () -> aggregatorRestClient.get()
+                () -> aggregatorRestClient().get()
                         .uri(uriBuilder -> uriBuilder
                                 .path("/api/workloads/{username}")
                                 .queryParam("year", 2026)
@@ -100,7 +115,7 @@ public class WorkloadMessagingSteps
                 minutes
         );
 
-        gymRestClient.post()
+        gymRestClient().post()
                 .uri("api/trainings")
                 .header(
                         HttpHeaders.AUTHORIZATION,
@@ -119,7 +134,7 @@ public class WorkloadMessagingSteps
                 .atMost(Duration.ofSeconds(5))
                         .untilAsserted(() -> {
                             TrainerMonthlyWorkloadResponse response =
-                                    aggregatorRestClient.get()
+                                    aggregatorRestClient().get()
                                             .uri(uriBuilder -> uriBuilder
                                                     .path("/api/workloads/{username}")
                                                     .queryParam("year", 2026)
@@ -150,7 +165,7 @@ public class WorkloadMessagingSteps
 
         assertThrows(
                 HttpClientErrorException.BadRequest.class,
-                () -> gymRestClient.post()
+                () -> gymRestClient().post()
                         .uri("api/trainings")
                         .header(
                                 HttpHeaders.AUTHORIZATION,
@@ -169,7 +184,7 @@ public class WorkloadMessagingSteps
                 .atMost(Duration.ofSeconds(5))
                 .untilAsserted(() -> {
                     assertThrows(HttpClientErrorException.NotFound.class,
-                            () -> aggregatorRestClient.get()
+                            () -> aggregatorRestClient().get()
                                     .uri(uriBuilder -> uriBuilder
                                             .path("/api/workloads/{username}")
                                             .queryParam("year", 2026)
