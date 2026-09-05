@@ -1,0 +1,17 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/gym_db_test
+    username: gym_user_test
+    password: gym_password_test
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+
+messaging:
+  trainer-workload-queue: trainer.workload.test

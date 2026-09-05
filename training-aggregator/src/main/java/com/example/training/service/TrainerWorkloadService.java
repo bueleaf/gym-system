@@ -9,15 +9,18 @@ import com.example.training.exception.DocumentNotFoundException;
 import com.example.training.exception.InvalidWorkloadException;
 import com.example.training.model.ActionType;
 import com.example.training.repository.TrainerMonthlySummaryRepository;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.annotation.Validated;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
+@Validated
 public class TrainerWorkloadService
 {
     private static final Logger LOG =
@@ -34,7 +37,7 @@ public class TrainerWorkloadService
 
     @Transactional
     public void updateWorkload(
-            TrainerWorkloadEvent trainerWorkloadEvent
+            @Valid TrainerWorkloadEvent trainerWorkloadEvent
     )
     {
         TrainerMonthlySummaryDocument document =
@@ -185,7 +188,6 @@ public class TrainerWorkloadService
             document.setFirstName(request.firstName());
             document.setLastName(request.lastName());
             document.setIsActive(request.isActive());
-            document.setYears(null);
 
             findOrCreateYearSummary(
                     request.trainingDuration(),
@@ -218,7 +220,7 @@ public class TrainerWorkloadService
             YearSummary yearSummary
     )
     {
-        if (month == null || yearSummary.getMonths() == null)
+        if (month == null || yearSummary.getMonths().isEmpty())
         {
             throw new DocumentNotFoundException(
                     "No training in month "
@@ -246,7 +248,7 @@ public class TrainerWorkloadService
             TrainerMonthlySummaryDocument document
     )
     {
-        if (year == null || document.getYears() == null)
+        if (year == null || document.getYears().isEmpty())
         {
             throw new DocumentNotFoundException(
                     "No training in year " + year + " exists"
@@ -290,7 +292,7 @@ public class TrainerWorkloadService
         YearSummary ys = new YearSummary();
         ys.setYear(year);
 
-        if (document.getYears() == null)
+        if (document.getYears().isEmpty())
         {
             List<YearSummary> years = new ArrayList<>();
             years.add(ys);
@@ -298,7 +300,9 @@ public class TrainerWorkloadService
         }
         else
         {
-            document.getYears().add(ys);
+            List<YearSummary> years = document.getYears();
+            years.add(ys);
+            document.setYears(years);
         }
 
         findOrCreateMonthSummary(trainingDuration, year, month, document);
@@ -335,7 +339,7 @@ public class TrainerWorkloadService
         ms.setMonth(month);
         ms.setTrainingDurationTotal(trainingDuration);
 
-        if (ys.getMonths() == null)
+        if (ys.getMonths().isEmpty())
         {
             List<MonthSummary> months = new ArrayList<>();
             months.add(ms);
@@ -343,7 +347,9 @@ public class TrainerWorkloadService
         }
         else
         {
-            ys.getMonths().add(ms);
+            List<MonthSummary> months = ys.getMonths();
+            months.add(ms);
+            ys.setMonths(months);
         }
     }
 
