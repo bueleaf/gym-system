@@ -14,5 +14,3 @@ spring:
     init:
       mode: always
 
-messaging:
-  trainer-workload-queue: trainer.workload.queue

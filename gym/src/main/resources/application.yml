@@ -23,6 +23,9 @@ management:
           - metrics
           - prometheus
 
+
+messaging:
+  trainer-workload-queue: trainer.workload.queue
   endpoint:
     health:
       show-details: always
